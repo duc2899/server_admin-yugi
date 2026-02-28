@@ -4,7 +4,7 @@ import { getAllCards, searchCards } from "../services/cardService";
 import { paginationSchema } from "../schemas/paginationSchema";
 import { searchCardSchema } from "../schemas/cardSchema";
 
-const fetchAllCards = async (req: Request, res: Response, next: NextFunction) => {
+const getAllCardsController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = paginationSchema.parse(req.query);
         const data = await getAllCards(parsed);
@@ -22,4 +22,4 @@ const searchCardsController = async (req: Request, res: Response, next: NextFunc
         next(error);
     }
 }
-export { fetchAllCards, searchCardsController };
+export { getAllCardsController, searchCardsController };

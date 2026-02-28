@@ -1,6 +1,6 @@
 import router from "express";
 import {
-  fetchAllCards,
+  getAllCardsController,
   searchCardsController,
 } from "../controllers/cardController";
 
@@ -31,7 +31,7 @@ const cardRoute = router.Router();
  *       200:
  *         description: Success
  */
-cardRoute.get("/", fetchAllCards);
+cardRoute.get("/", getAllCardsController);
 
 /**
  * @swagger
