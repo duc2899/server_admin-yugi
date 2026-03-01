@@ -29,6 +29,7 @@ const searchCards = async (options: SearchCardOptions) => {
     type,
     monsterType,
     monsterAttribute,
+    monsterCategory,
     level,
     spellType,
     trapType,
@@ -62,6 +63,11 @@ const searchCards = async (options: SearchCardOptions) => {
     if (level) {
       query.level = level;
     }
+
+    if (monsterCategory?.length) {
+      query.monsterCategories = { $in: monsterCategory };
+    }
+
   }
 
   // ✨ Spell filter

@@ -5,6 +5,7 @@ export interface SearchCardOptions extends PaginationOptions {
   type?: string; // monster | spell | trap
   monsterType?: string;
   monsterAttribute?: string[];
+  monsterCategory?: string[];
   level?: number;
   spellType?: string;
   trapType?: string;
@@ -61,4 +62,23 @@ export const TRAP_TYPES = [
   "NORMAL",
   "CONTINUOUS",
   "COUNTER",
+] as const;
+
+
+export const MONSTER_CATEGORIES = [
+  "NORMAL",
+  "EFFECT",
+  "RITUAL",
+  "FUSION",
+  "SYNCHRO",
+  "XYZ",
+  "LINK",
+  "PENDULUM",
+  "TOKEN",
+  "FLIP",
+  "SPIRIT",
+  "TOON",
+  "UNION",
+  "GEMINI",
+  "TUNER",
 ] as const;

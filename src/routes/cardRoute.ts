@@ -67,6 +67,13 @@ cardRoute.get("/", getAllCardsController);
  *           type: string
  *         required: false
  *         description: Attribute of monster
+ * 
+ *       - in: query
+ *         name: monsterCategory
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Category of monster
  *
  *       - in: query
  *         name: level
