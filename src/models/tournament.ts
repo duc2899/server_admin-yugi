@@ -1,8 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 
 interface IRegester {
-    accountId: string;
-    deckCode: string;
+    playerId: string;
+    deckId: string;
     createdTime: Date;
 }
 
@@ -30,27 +30,28 @@ export interface ITournament {
 }
 
 const tournamentSchema = new Schema<ITournament>({
+    _id: { type: String, required: true },
     name: { type: String, required: true },
     bannishCardCodes: { type: [String], required: true },   
-    createdTime: { type: Date, required: true },
+    createdTime: { type: Date, required: true, default: Date.now },
     desc: { type: String, default: null },
     image: { type: String, default: null },
     limitNumberPlayers: { type: Number, required: true },
-    registers: { type: [{ accountId: String, deckCode: String, createdTime: Date }], default: [] },
+    registers: { type: [{ playerId: String, deckId: String, createdTime: Date }], default: [] },
     roundIndex: { type: Number, default: 0 },
     roundMatches: { type: [String], default: [] },
     roundPlayerIds: { type: [String], default: [] },
-    roundStartedTime: { type: Date, default: new Date(0) },
+    roundStartedTime: { type: Date },
     rubyFee: { type: Number, required: true },
     rubyReward: { type: Number, required: true },
     sponser: { type: String, default: null },
     status: { type: String, required: true },
-    tournamentStartedTime: { type: Date, default: new Date(0) },
+    tournamentStartedTime: { type: Date },
     type: { type: String, required: true },
-    updatedTime: { type: Date, default: new Date(0) },
+    updatedTime: { type: Date, default: Date.now },
     winPlayerId: { type: String, default: null },
 });
 
-const Tournament = mongoose.model<ITournament>("tournament", tournamentSchema);
+const Tournament = mongoose.model<ITournament>("tournament", tournamentSchema, "tournament");
 
 export default Tournament;

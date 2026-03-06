@@ -1,5 +1,5 @@
-import { SearchCardOptions } from "../@types/cards";
-import { PaginationOptions } from "../@types/common";
+import { SearchCardOptions } from "../types/cards";
+import { PaginationOptions } from "../types/common";
 import Card from "../models/card";
 
 const getAllCards = async ({ page = 1, limit = 10 }: PaginationOptions) => {

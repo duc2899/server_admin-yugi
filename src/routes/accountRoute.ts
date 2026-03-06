@@ -1,4 +1,5 @@
 import router from "express";
+import authMiddleware from "../middlewares/authMiddleware";
 import { fetchAllAccounts } from "../controllers/accountController";
 
 const accountRoute = router.Router();
@@ -9,6 +10,8 @@ const accountRoute = router.Router();
  *   get:
  *     summary: Get all accounts
  *     tags: [Accounts]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -28,6 +31,6 @@ const accountRoute = router.Router();
  *       200:
  *         description: Success
  */
-accountRoute.get("/", fetchAllAccounts);
+accountRoute.get("/", authMiddleware, fetchAllAccounts);
 
 export default accountRoute;

@@ -1,0 +1,25 @@
+import mongoose, { Schema } from "mongoose";
+
+
+export interface IAccountAdmin {
+    _id: string;
+    username: string;
+    fullName: string;
+    password: string;
+    createdTime: Date;
+    updatedTime: Date;
+}
+
+const AccountAdminSchema: Schema = new Schema<IAccountAdmin>(
+    {
+        _id: { type: String, required: true },
+        fullName: { type: String, required: true },
+        username: { type: String, required: true },
+        password: { type: String, required: true },
+        createdTime: { type: Date, required: true, default: Date.now },
+        updatedTime: { type: Date, required: true, default: Date.now },
+    }
+);
+
+const AccountAdmin = mongoose.model<IAccountAdmin>("accountAdmin", AccountAdminSchema, "accountAdmin");
+export default AccountAdmin;

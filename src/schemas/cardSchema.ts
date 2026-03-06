@@ -6,7 +6,7 @@ import {
   SPELL_TYPES,
   TRAP_TYPES,
   TYPE_CARDS,
-} from "../@types/cards";
+} from "../types/cards";
 
 const commaSeparatedEnum = <T extends readonly string[]>(
   allowedValues: T

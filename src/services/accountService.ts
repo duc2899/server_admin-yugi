@@ -1,4 +1,4 @@
-import { PaginationOptions } from "../@types/common";
+import { PaginationOptions } from "../types/common";
 import Account from "../models/account";
 
 const getAllAccounts = async ({ page = 1, limit = 10 }: PaginationOptions) => {

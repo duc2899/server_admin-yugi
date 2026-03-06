@@ -3,6 +3,7 @@ import {
   getAllCardsController,
   searchCardsController,
 } from "../controllers/cardController";
+import authMiddleware from "../middlewares/authMiddleware";
 
 const cardRoute = router.Router();
 
@@ -12,6 +13,8 @@ const cardRoute = router.Router();
  *   get:
  *     summary: Get all cards
  *     tags: [Cards]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -31,7 +34,7 @@ const cardRoute = router.Router();
  *       200:
  *         description: Success
  */
-cardRoute.get("/", getAllCardsController);
+cardRoute.get("/", authMiddleware, getAllCardsController);
 
 /**
  * @swagger
@@ -39,6 +42,8 @@ cardRoute.get("/", getAllCardsController);
  *   get:
  *     summary: Search cards multi
  *     tags: [Search Cards]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: name
@@ -128,6 +133,6 @@ cardRoute.get("/", getAllCardsController);
  *       200:
  *         description: Success
  */
-cardRoute.get("/search", searchCardsController);
+cardRoute.get("/search", authMiddleware, searchCardsController);
 
 export default cardRoute;
