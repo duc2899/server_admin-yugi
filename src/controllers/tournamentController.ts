@@ -1,10 +1,11 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Response, NextFunction } from 'express';
 
 import { getAllTournaments } from '../services/tournamentService';
 import { getTournamentSchema } from '../schemas/tournamentSchema';
+import { AppRequest } from '../types/common';
 
 
-const fetchAllTournaments = async (req: Request, res: Response, next: NextFunction) => {
+const fetchAllTournaments = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
         const parsed = getTournamentSchema.parse(req.query);
         const data = await getAllTournaments(parsed);

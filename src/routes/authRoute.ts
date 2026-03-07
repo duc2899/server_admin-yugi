@@ -1,6 +1,8 @@
 import router from "express";
-import { loginController, registerController } from "../controllers/authController";
-import accountRoute from "./accountRoute";
+import { loginController, registerController, changeRoleController } from "../controllers/authController";
+import authMiddleware from "../middlewares/authMiddleware";
+import roleMiddleware from "../middlewares/roleMiddleware";
+import { RoleAdmin } from "../models/accountAdmin";
 
 const authRoute = router.Router();
 
@@ -68,6 +70,38 @@ authRoute.post("/register", registerController);
  *         description: Invalid username or password
  */
 authRoute.post("/login", loginController);
+
+
+
+/**
+ * @swagger
+ * /api/v1/auth/change-role:
+ *   post:
+ *     summary: Change Role
+ *     tags: [Accounts Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - _id
+ *               - role
+ *             properties:
+ *               _id:
+ *                 type: string
+ *                 example: abcwq
+ *               role:
+ *                 type: string
+ *                 example: normal
+ *     responses:
+ *       200:
+ *         description: Change role successfully
+ */
+authRoute.post("/change-role", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), changeRoleController);
 
 
 export default authRoute;

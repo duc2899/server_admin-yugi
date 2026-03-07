@@ -1,10 +1,11 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Response, NextFunction } from "express";
 
 import { getAllCards, searchCards } from "../services/cardService";
 import { paginationSchema } from "../schemas/paginationSchema";
 import { searchCardSchema } from "../schemas/cardSchema";
+import { AppRequest } from "../types/common";
 
-const getAllCardsController = async (req: Request, res: Response, next: NextFunction) => {
+const getAllCardsController = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
         const parsed = paginationSchema.parse(req.query);
         const data = await getAllCards(parsed);
@@ -13,7 +14,7 @@ const getAllCardsController = async (req: Request, res: Response, next: NextFunc
         next(error);
     }
 };
-const searchCardsController = async (req: Request, res: Response, next: NextFunction) => {
+const searchCardsController = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
         const parsed = searchCardSchema.parse(req.query);
         const data = await searchCards(parsed);
