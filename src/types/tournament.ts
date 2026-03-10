@@ -5,3 +5,7 @@ export interface GetTournamentOptions extends PaginationOptions {
     type?: string;
     status?: string;
 }
+
+export interface GetTournamentDetail {
+    id: String
+}

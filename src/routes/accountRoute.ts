@@ -19,6 +19,7 @@ const accountRoute = router.Router();
  *         name: page
  *         schema:
  *           type: number
+ *           default: 1
  *         required: false
  *         description: Page number
  *
@@ -26,6 +27,7 @@ const accountRoute = router.Router();
  *         name: limit
  *         schema:
  *           type: number
+ *           default: 10
  *         required: false
  *         description: Limit response
  *

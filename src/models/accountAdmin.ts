@@ -28,5 +28,5 @@ const AccountAdminSchema: Schema = new Schema<IAccountAdmin>(
     }
 );
 
-const AccountAdmin = mongoose.model<IAccountAdmin>("accountAdmin", AccountAdminSchema, "accountAdmin");
+const AccountAdmin = mongoose.model<IAccountAdmin>("account_admin", AccountAdminSchema, "account_admin");
 export default AccountAdmin;

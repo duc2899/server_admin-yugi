@@ -1,5 +1,5 @@
 import router from "express";
-import { fetchAllTournaments } from "../controllers/tournamentController";
+import { getAllTournamentController, getTournamentDetailController } from "../controllers/tournamentController";
 import authMiddleware from "../middlewares/authMiddleware";
 
 const tournamentRoute = router.Router();
@@ -10,13 +10,14 @@ const tournamentRoute = router.Router();
  *   get:
  *     summary: Get all tournaments
  *     tags: [Tournaments]
-*     security:
+ *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
  *         schema:
  *           type: number
+ *           default: 1
  *         required: false
  *         description: Page number
  *
@@ -24,6 +25,7 @@ const tournamentRoute = router.Router();
  *         name: limit
  *         schema:
  *           type: number
+ *           default: 10
  *         required: false
  *         description: Limit response
  * 
@@ -41,7 +43,7 @@ const tournamentRoute = router.Router();
  *         required: false
  *         description: Status of tournament
  * 
-*       - in: query
+ *       - in: query
  *         name: type
  *         schema:
  *           type: string
@@ -52,6 +54,28 @@ const tournamentRoute = router.Router();
  *       200:
  *         description: Success
  */
-tournamentRoute.get("/", authMiddleware, fetchAllTournaments);
+tournamentRoute.get("/", authMiddleware, getAllTournamentController);
 
+/**
+ * @swagger
+ * /api/v1/tournaments/{id}:
+ *   get:
+ *     summary: Get tournament detail
+ *     tags: [Tournaments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Tournament ID
+ *     responses:
+ *       200:
+ *         description: Success
+ *       404:
+ *         description: Tournament not found
+ */
+tournamentRoute.get("/:id", authMiddleware, getTournamentDetailController);
 export default tournamentRoute;

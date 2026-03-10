@@ -2,12 +2,12 @@ import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
-import AccountAdmin, { RoleAdmin } from "../models/accountAdmin";
-import { requestRegisterAccountAdmin, requestLoginAccountAdmin, requestChangeRoleAccountAdmin } from "../types/accountAdmin";
+import AccountAdmin from "../models/accountAdmin";
+import { requestLogin, requestRegister } from "../types/auth";
 import throwError from "../utils/throwError";
 import { ENV } from "../config/env";
 
-export const registerService = async ({ username, password, fullName }: requestRegisterAccountAdmin) => {
+export const registerService = async ({ username, password, fullName }: requestRegister) => {
     try {
         const exitsAccount = await AccountAdmin.findOne({ username });
 
@@ -35,8 +35,7 @@ export const registerService = async ({ username, password, fullName }: requestR
     }
 }
 
-
-export const loginService = async ({ username, password }: requestLoginAccountAdmin) => {
+export const loginService = async ({ username, password }: requestLogin) => {
     try {
         const user = await AccountAdmin.findOne({ username });
         if (!user) {
@@ -57,21 +56,6 @@ export const loginService = async ({ username, password }: requestLoginAccountAd
                 username: user.username,
                 fullName: user.fullName,
             }
-        }
-    } catch (error: any) {
-        throw error;
-    }
-}
-
-export const changeRoleService = async ({ role, _id }: requestChangeRoleAccountAdmin) => {
-    try {
-        const user = await AccountAdmin.findOneAndUpdate({ _id: _id }, { role: role }, { new: true, runValidators: true })
-        if (!user) {
-            return throwError("User not found", 404);
-        }
-        return {
-            _id: user._id,
-            role: user.role
         }
     } catch (error: any) {
         throw error;

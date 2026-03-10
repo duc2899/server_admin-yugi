@@ -20,6 +20,7 @@ const cardRoute = router.Router();
  *         name: page
  *         schema:
  *           type: number
+ *           default: 1
  *         required: false
  *         description: Page number
  *
@@ -27,6 +28,7 @@ const cardRoute = router.Router();
  *         name: limit
  *         schema:
  *           type: number
+ *           default: 10
  *         required: false
  *         description: Limit response
  *
@@ -41,7 +43,7 @@ cardRoute.get("/", authMiddleware, getAllCardsController);
  * /api/v1/cards/search:
  *   get:
  *     summary: Search cards multi
- *     tags: [Search Cards]
+ *     tags: [Cards]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -119,6 +121,7 @@ cardRoute.get("/", authMiddleware, getAllCardsController);
  *         name: page
  *         schema:
  *           type: number
+ *           default: 1
  *         required: false
  *         description: Page number
  *
@@ -126,6 +129,7 @@ cardRoute.get("/", authMiddleware, getAllCardsController);
  *         name: limit
  *         schema:
  *           type: number
+ *           default: 10
  *         required: false
  *         description: Limit response
  * 

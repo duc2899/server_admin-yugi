@@ -1,7 +1,7 @@
 import type { Response, NextFunction } from "express";
 
-import { loginService, registerService, changeRoleService } from "../services/authService";
-import { changeRoleSchema, loginSchema, registerSchema } from "../schemas/authSchema";
+import { loginService, registerService } from "../services/authService";
+import { loginSchema, registerSchema } from "../schemas/authSchema";
 import { AppRequest } from "../types/common";
 
 const registerController = async (req: AppRequest, res: Response, next: NextFunction) => {
@@ -24,14 +24,4 @@ const loginController = async (req: AppRequest, res: Response, next: NextFunctio
     }
 };
 
-const changeRoleController = async (req: AppRequest, res: Response, next: NextFunction) => {
-    try {
-        const parsed = changeRoleSchema.parse(req.body);
-        const result = await changeRoleService(parsed);
-        res.status(200).json({ status: true, data: result, message: "Change role successful" });
-    } catch (error) {
-        next(error);
-    }
-};
-
-export { registerController, loginController, changeRoleController };
+export { registerController, loginController };
