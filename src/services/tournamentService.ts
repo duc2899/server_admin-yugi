@@ -7,7 +7,7 @@ const getAllTournamentsService = async (options: GetTournamentOptions) => {
     const skip = (page - 1) * limit;
 
     const query: any = {};
-    if (name) query.name = { $regex: name, $options: "i" };
+    if (name) query.name = { $regex: name.trim(), $options: "i" };
     if (type) query.type = type;
     if (status) query.status = status;
 

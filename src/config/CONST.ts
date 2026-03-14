@@ -1,0 +1,5 @@
+const EXPRIE_TOKEN = "1d";
+const EXPRIE_COOKIE = 24 * 60 * 60 * 1000
+
+
+export { EXPRIE_TOKEN, EXPRIE_COOKIE }

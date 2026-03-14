@@ -14,6 +14,7 @@ export interface IAccountAdmin {
     role: RoleAdmin;
     createdTime: Date;
     updatedTime: Date;
+    lastedLogin: Date | null;
 }
 
 const AccountAdminSchema: Schema = new Schema<IAccountAdmin>(
@@ -25,6 +26,7 @@ const AccountAdminSchema: Schema = new Schema<IAccountAdmin>(
         role: { type: String, required: true, default: RoleAdmin.NORMAL },
         createdTime: { type: Date, required: true, default: Date.now },
         updatedTime: { type: Date, required: true, default: Date.now },
+        lastedLogin: { type: Date, default: null }
     }
 );
 

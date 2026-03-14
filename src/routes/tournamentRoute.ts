@@ -54,7 +54,7 @@ const tournamentRoute = router.Router();
  *       200:
  *         description: Success
  */
-tournamentRoute.get("/", authMiddleware, getAllTournamentController);
+tournamentRoute.get("/", getAllTournamentController);
 
 /**
  * @swagger
@@ -77,5 +77,5 @@ tournamentRoute.get("/", authMiddleware, getAllTournamentController);
  *       404:
  *         description: Tournament not found
  */
-tournamentRoute.get("/:id", authMiddleware, getTournamentDetailController);
+tournamentRoute.get("/:id", getTournamentDetailController);
 export default tournamentRoute;

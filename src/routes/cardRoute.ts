@@ -36,7 +36,7 @@ const cardRoute = router.Router();
  *       200:
  *         description: Success
  */
-cardRoute.get("/", authMiddleware, getAllCardsController);
+cardRoute.get("/", getAllCardsController);
 
 /**
  * @swagger

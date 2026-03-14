@@ -10,4 +10,7 @@ export interface requestLogin {
     password: string;
 }
 
+export interface requestProfile {
+    _id?: string | undefined
+}
 

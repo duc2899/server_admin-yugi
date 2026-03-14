@@ -3,9 +3,10 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
 import AccountAdmin from "../models/accountAdmin";
-import { requestLogin, requestRegister } from "../types/auth";
+import { requestLogin, requestRegister, requestProfile } from "../types/auth";
 import throwError from "../utils/throwError";
 import { ENV } from "../config/env";
+import { EXPRIE_TOKEN } from "../config/CONST";
 
 export const registerService = async ({ username, password, fullName }: requestRegister) => {
     try {
@@ -47,7 +48,7 @@ export const loginService = async ({ username, password }: requestLogin) => {
             return throwError("Invalid username or password", 400);
         }
 
-        const token = jwt.sign({ _id: user._id, role: user.role }, ENV.JWT_SECRET_KEY, { expiresIn: "1d" });
+        const token = jwt.sign({ _id: user._id, role: user.role }, ENV.JWT_SECRET_KEY, { expiresIn: EXPRIE_TOKEN });
 
         return {
             token,
@@ -55,8 +56,36 @@ export const loginService = async ({ username, password }: requestLogin) => {
                 _id: user._id,
                 username: user.username,
                 fullName: user.fullName,
+                role: user.role
             }
         }
+    } catch (error: any) {
+        throw error;
+    }
+}
+
+export const getProfileService = async ({ _id }: requestProfile) => {
+    try {
+        if (!_id) {
+            return throwError("Not found user", 400);
+        }
+
+        const user = await AccountAdmin.findOne({ _id }).select("-password");
+        if (!user) {
+            return throwError("Not found user", 400);
+        }
+
+        return {
+            _id: user._id,
+            username: user.username,
+            fullName: user.fullName,
+            role: user.role,
+            lastedLogin: user.lastedLogin,
+            createdTime: user.createdTime,
+            updatedTime: user.updatedTime,
+        }
+
+
     } catch (error: any) {
         throw error;
     }

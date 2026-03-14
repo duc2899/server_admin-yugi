@@ -83,7 +83,7 @@ adminRoute.get("/get-version-client", authMiddleware, getVersionClientController
 
 /**
  * @swagger
- * /api/v1/admin/set-version:
+ * /api/v1/admin/set-version-client:
  *   post:
  *     summary: Set version client
  *     tags: [Services Admin]
@@ -105,7 +105,7 @@ adminRoute.get("/get-version-client", authMiddleware, getVersionClientController
  *       200:
  *         description: Change role successfully
  */
-adminRoute.post("/set-version", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), setVersionClientController);
+adminRoute.post("/set-version-client", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), setVersionClientController);
 
 
 export default adminRoute;

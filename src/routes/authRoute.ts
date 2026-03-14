@@ -1,5 +1,6 @@
 import router from "express";
-import { loginController, registerController } from "../controllers/authController";
+import { loginController, registerController,getProfileController } from "../controllers/authController";
+import authMiddleware from "../middlewares/authMiddleware";
 const authRoute = router.Router();
 
 /**
@@ -7,7 +8,7 @@ const authRoute = router.Router();
  * /api/v1/auth/register:
  *   post:
  *     summary: Register Account Admin
- *     tags: [Accounts Admin]
+ *     tags: [Account Admin]
  *     requestBody:
  *       required: true
  *       content:
@@ -42,7 +43,7 @@ authRoute.post("/register", registerController);
  * /api/v1/auth/login:
  *   post:
  *     summary: Login Account Admin
- *     tags: [Accounts Admin]
+ *     tags: [Account Admin]
  *     requestBody:
  *       required: true
  *       content:
@@ -66,5 +67,20 @@ authRoute.post("/register", registerController);
  *         description: Invalid username or password
  */
 authRoute.post("/login", loginController);
+
+
+/**
+ * @swagger
+ * /api/v1/auth/profile:
+ *   get:
+ *     summary: Get profile account
+ *     tags: [Account Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+authRoute.get("/profile", authMiddleware, getProfileController);
 
 export default authRoute;
