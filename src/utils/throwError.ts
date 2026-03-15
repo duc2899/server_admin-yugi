@@ -1,9 +1,11 @@
+import { StatusCode } from "../constants/status-codes.";
+
 interface CustomError extends Error {
-    statusCode: number;
+    statusCode: StatusCode;
     returnCode?: number;
 }
 
-const throwError = (message: string, statusCode: number = 400, returnCode?: number) => {
+const throwError = (message: string, statusCode: StatusCode, returnCode?: number) => {
     const error = new Error(message) as CustomError;
 
     error.statusCode = statusCode;

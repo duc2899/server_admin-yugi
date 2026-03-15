@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
-import { ENV } from "./env";
+import env from "./env";
+
 export const connectDB = async (): Promise<void> => {
     try {
-        const uri = ENV.MONGO_URI;
+        const uri = env.DATABASE_URL
 
         await mongoose.connect(uri);
 

@@ -1,5 +1,5 @@
 import router from "express";
-import { getAllTournamentController, getTournamentDetailController } from "../controllers/tournamentController";
+import { getAllTournamentController, getTournamentDetailController } from "../controllers/tournament.controller";
 import authMiddleware from "../middlewares/authMiddleware";
 
 const tournamentRoute = router.Router();

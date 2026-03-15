@@ -1,15 +1,18 @@
+import http from "http";
 import express from "express";
-import { connectDB } from "./config/db";
-import { setupSecurity } from "./config/security";
-import { ENV } from "./config/env";
+import { connectDB } from "./configs/db";
+import { setupSecurity } from "./configs/security";
+import env from "./configs/env";
 import errorHandler from "./middlewares/errorHandeler";
 import initRouter from "./routes/index";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger";
+import { configureGracefulShutdown } from "./utils/shutdown";
+import { logger } from "./utils/logger";
 
 
 const app = express();
-
+const server = http.createServer(app);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -25,6 +28,9 @@ app.use("/api/v1", initRouter);
 // setup error handler
 app.use(errorHandler);
 
-app.listen(ENV.PORT, () => {
-    console.log(`🚀 Server running on port ${ENV.PORT}`);
+server.listen(env.PORT, () => {
+    logger.info("Server started");
+    console.log(`🚀 Server running on port ${env.PORT}`);
 });
+
+configureGracefulShutdown(server)

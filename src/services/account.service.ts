@@ -6,7 +6,7 @@ const getAllAccounts = async (options: GetAccountsOptions) => {
     const skip = (page - 1) * limit;
 
     const query: any = {};
-    console.log("key:", key);
+    
     if (key?.trim()) {
         const k = key.trim();
 

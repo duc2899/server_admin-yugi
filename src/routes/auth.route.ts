@@ -1,5 +1,5 @@
 import router from "express";
-import { loginController, registerController,getProfileController } from "../controllers/authController";
+import { loginController, registerController,getProfileController, logoutController } from "../controllers/auth.controller";
 import authMiddleware from "../middlewares/authMiddleware";
 const authRoute = router.Router();
 
@@ -82,5 +82,19 @@ authRoute.post("/login", loginController);
  *         description: Success
  */
 authRoute.get("/profile", authMiddleware, getProfileController);
+
+/**
+ * @swagger
+ * /api/v1/auth/logout:
+ *   get:
+ *     summary: Logout account
+ *     tags: [Account Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+authRoute.get("/logout", authMiddleware, logoutController);
 
 export default authRoute;

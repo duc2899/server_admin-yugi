@@ -2,7 +2,7 @@ import router from "express";
 import {
   getAllCardsController,
   searchCardsController,
-} from "../controllers/cardController";
+} from "../controllers/card.controller";
 import authMiddleware from "../middlewares/authMiddleware";
 
 const cardRoute = router.Router();

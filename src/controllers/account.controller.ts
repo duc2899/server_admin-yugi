@@ -1,14 +1,15 @@
 import type { Response, NextFunction } from "express";
 
-import { getAllAccounts } from "../services/accountService";
+import { getAllAccounts } from "../services/account.service";
 import { AppRequest } from "../types/common";
 import { getAccountsSchema } from "../schemas/accountSchema";
+import { ApiResponse } from "../utils/api-response";
 
 const fetchAllAccounts = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
         const parsed = getAccountsSchema.parse(req.query);
         const data = await getAllAccounts(parsed);
-        res.status(200).json({ status: true, data, message: "Accounts fetched successfully" });
+        ApiResponse.ok(res, "Accounts fetched successfully", data)
     } catch (error) {
         next(error);
     }

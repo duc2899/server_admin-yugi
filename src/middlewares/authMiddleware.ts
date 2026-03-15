@@ -1,8 +1,9 @@
 import type { Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import throwError from "../utils/throwError";
-import { ENV } from "../config/env";
 import { AppRequest, JwtPayload } from "../types/common";
+import { STATUS_CODES } from "../constants/status-codes.";
+import env from "../configs/env";
 
 const authMiddleware = (req: AppRequest, res: Response, next: NextFunction) => {
     let token: string | undefined;
@@ -19,11 +20,11 @@ const authMiddleware = (req: AppRequest, res: Response, next: NextFunction) => {
     }
 
     if (!token) {
-        return throwError("Unauthorized", 401);
+        return throwError("Unauthorized", STATUS_CODES.UNAUTHORIZED);
     }
 
     try {
-        const decoded = jwt.verify(token, ENV.JWT_SECRET_KEY as string) as JwtPayload;
+        const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET as string) as JwtPayload;
         req.user = decoded;
         next();
     } catch {

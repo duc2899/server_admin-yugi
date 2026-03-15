@@ -1,28 +1,29 @@
 import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken"
-import bcrypt from "bcrypt"
 
 import AccountAdmin from "../models/accountAdmin";
 import { requestLogin, requestRegister, requestProfile } from "../types/auth";
 import throwError from "../utils/throwError";
-import { ENV } from "../config/env";
-import { EXPRIE_TOKEN } from "../config/CONST";
+import { EXPRIE_TOKEN } from "../constants/common";
+import { STATUS_CODES } from "../constants/status-codes.";
+import env from "../configs/env";
+import { hashPassword, verifyPassword } from "../helpers/auth.helpers";
 
 export const registerService = async ({ username, password, fullName }: requestRegister) => {
     try {
         const exitsAccount = await AccountAdmin.findOne({ username });
 
         if (exitsAccount) {
-            return throwError("Username already exists", 400);
+            return throwError("Username already exists", STATUS_CODES.CONFLICT);
         }
 
         const uuidv4 = nanoid(8);
-        const hashPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await hashPassword(password);
         const user = await AccountAdmin.create({
             _id: uuidv4,
             username,
             fullName,
-            password: hashPassword,
+            password: hashedPassword,
         });
 
         return {
@@ -38,17 +39,17 @@ export const registerService = async ({ username, password, fullName }: requestR
 
 export const loginService = async ({ username, password }: requestLogin) => {
     try {
-        const user = await AccountAdmin.findOne({ username });
+        const user = await AccountAdmin.findOne({ username }).select("+password");;
         if (!user) {
-            return throwError("Invalid username or password", 400);
+            return throwError("Invalid username or password", STATUS_CODES.UNAUTHORIZED);
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await verifyPassword(password, user.password);
         if (!isPasswordValid) {
-            return throwError("Invalid username or password", 400);
+            return throwError("Invalid username or password", STATUS_CODES.UNAUTHORIZED);
         }
 
-        const token = jwt.sign({ _id: user._id, role: user.role }, ENV.JWT_SECRET_KEY, { expiresIn: EXPRIE_TOKEN });
+        const token = jwt.sign({ _id: user._id, role: user.role }, env.JWT_ACCESS_SECRET, { expiresIn: EXPRIE_TOKEN });
 
         return {
             token,
@@ -67,12 +68,12 @@ export const loginService = async ({ username, password }: requestLogin) => {
 export const getProfileService = async ({ _id }: requestProfile) => {
     try {
         if (!_id) {
-            return throwError("Not found user", 400);
+            return throwError("Not found user", STATUS_CODES.NOT_FOUND);
         }
 
         const user = await AccountAdmin.findOne({ _id }).select("-password");
         if (!user) {
-            return throwError("Not found user", 400);
+            return throwError("Not found user", STATUS_CODES.NOT_FOUND);
         }
 
         return {
@@ -85,6 +86,25 @@ export const getProfileService = async ({ _id }: requestProfile) => {
             updatedTime: user.updatedTime,
         }
 
+
+    } catch (error: any) {
+        throw error;
+    }
+}
+
+
+export const logoutService = async ({ _id }: requestProfile) => {
+    try {
+        if (!_id) {
+            return throwError("Not found user", STATUS_CODES.NOT_FOUND);
+        }
+
+        const user = await AccountAdmin.findOneAndUpdate({ _id }, { lastedLogin: Date.now() });
+        if (!user) {
+            return throwError("Not found user", STATUS_CODES.NOT_FOUND);
+        }
+
+        return null;
 
     } catch (error: any) {
         throw error;

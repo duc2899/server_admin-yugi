@@ -1,4 +1,4 @@
-import { connectDB } from "../config/db";
+import { connectDB } from "../configs/db";
 import AccountAdmin from "../models/accountAdmin";
 async function migrate() {
     try {

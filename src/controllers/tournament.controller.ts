@@ -1,15 +1,16 @@
 import type { Response, NextFunction } from 'express';
 
-import { getAllTournamentsService, getTournamentDetailService } from '../services/tournamentService';
+import { getAllTournamentsService, getTournamentDetailService } from '../services/tournament.service';
 import { getTournamentSchema, getTournamentDetail } from '../schemas/tournamentSchema';
 import { AppRequest } from '../types/common';
+import { ApiResponse } from '../utils/api-response';
 
 
 const getAllTournamentController = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
         const parsed = getTournamentSchema.parse(req.query);
         const data = await getAllTournamentsService(parsed);
-        res.status(200).json({ status: true, data, message: "Tournaments fetched successfully" });
+        return ApiResponse.ok(res, "Tournaments fetched successfully", data)
     } catch (error) {
         next(error);
     }
@@ -19,10 +20,10 @@ const getTournamentDetailController = async (req: AppRequest, res: Response, nex
     try {
         const parsed = getTournamentDetail.parse(req.params);
         const data = await getTournamentDetailService(parsed);
-        res.status(200).json({ status: true, data, message: "Tournament fetched successfully" });
+        return ApiResponse.ok(res, "Tournaments fetched successfully", data)
     } catch (error) {
         next(error);
     }
 };
 
-export { getAllTournamentController, getTournamentDetailController};
+export { getAllTournamentController, getTournamentDetailController };

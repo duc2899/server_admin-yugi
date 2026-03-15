@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 import { ApiError } from "../types/api";
+import env from "../configs/env";
 
 const errorHandler = (
     err: unknown,
@@ -29,7 +30,7 @@ const errorHandler = (
             message: apiError.message || "Internal Server Error",
             returnCode: apiError.returnCode || "UNKNOWN_ERROR",
             stack:
-                process.env.NODE_ENV === "production"
+                env.NODE_ENV === "production"
                     ? undefined
                     : apiError.stack
         });

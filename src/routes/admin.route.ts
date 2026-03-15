@@ -1,5 +1,5 @@
 import router from "express";
-import { changeRoleController, getAllAccountsController, getVersionClientController, setVersionClientController } from "../controllers/adminController";
+import { changeRoleController, getAllAccountsController, getVersionClientController, setVersionClientController } from "../controllers/admin.controller";
 import authMiddleware from "../middlewares/authMiddleware";
 import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAdmin } from "../models/accountAdmin";

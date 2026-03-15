@@ -1,15 +1,16 @@
-import { requestSetVersionClient } from './../types/admin';
+import { requestSetVersionClient } from '../types/admin';
 import AccountAdmin from "../models/accountAdmin";
 import Config from "../models/config";
 import { requestChangeRole } from "../types/admin";
 import { PaginationOptions } from "../types/common";
 import throwError from "../utils/throwError";
+import { STATUS_CODES } from '../constants/status-codes.';
 
 const changeRoleService = async ({ role, _id }: requestChangeRole) => {
     try {
         const user = await AccountAdmin.findOneAndUpdate({ _id: _id }, { role: role }, { new: true, runValidators: true })
         if (!user) {
-            return throwError("User not found", 404);
+            return throwError("User not found", STATUS_CODES.NOT_FOUND);
         }
         return {
             _id: user._id,
@@ -47,7 +48,7 @@ const getAllAccountsService = async ({ page = 1, limit = 10 }: PaginationOptions
 const getVersionClientService = async () => {
     const config = await Config.findOne({ _id: "CLIENT_VERSION" }).lean();
     if (!config) {
-        return throwError("Not found config", 400);
+        return throwError("Not found config", STATUS_CODES.NOT_FOUND);
     }
 
     return config.data;
@@ -61,7 +62,7 @@ const setVersionClientService = async ({ version }: requestSetVersionClient) => 
     );
 
     if (!config) {
-        return throwError("Not found config", 400);
+        return throwError("Not found config", STATUS_CODES.NOT_FOUND);
     }
 
     return config;

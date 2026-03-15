@@ -1,28 +1,17 @@
 import { Express } from "express";
 import { Request, Response } from "express";
-import cors from "cors";
-import helmet from "helmet";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import rateLimiter from "../middlewares/rateLimiter";
 import hpp from "hpp";
 import compression from "compression";
 import cookieParser from "cookie-parser";
+import { configureSecurityHeaders } from "../middlewares/security-header";
 
 export const setupSecurity = (app: Express) => {
 
-    // Helmet bảo mật header HTTP
-    app.use(helmet());
+    configureSecurityHeaders(app);
     app.use(cookieParser());
-
-    // CORS
-    app.use(
-        cors({
-            origin: "http://localhost:3000",
-            credentials: true,
-        })
-    );
-
     // Bảo vệ chống tấn công HTTP Parameter Pollution
     app.use(hpp());
     // Nén phản hồi

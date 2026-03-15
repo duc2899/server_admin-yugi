@@ -1,6 +1,6 @@
 import router from "express";
 import authMiddleware from "../middlewares/authMiddleware";
-import { fetchAllAccounts } from "../controllers/accountController";
+import { fetchAllAccounts } from "../controllers/account.controller";
 import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAdmin } from "../models/accountAdmin";
 
