@@ -2,8 +2,8 @@ import type { Response, NextFunction } from "express";
 import { changeRoleService, getAllAccountsService, getVersionClientService, setVersionClientService } from "../services/admin.service";
 import { changeRoleSchema, setVersionClientSchema } from "../schemas/adminSchema";
 import { AppRequest } from "../types/common";
-import { paginationSchema } from "../schemas/paginationSchema";
 import { ApiResponse } from "../utils/api-response";
+import { getAccountsSchema } from "../schemas/accountSchema";
 
 const changeRoleController = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
@@ -17,7 +17,7 @@ const changeRoleController = async (req: AppRequest, res: Response, next: NextFu
 
 const getAllAccountsController = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
-        const parsed = paginationSchema.parse(req.query);
+        const parsed = getAccountsSchema.parse(req.query);
         const data = await getAllAccountsService(parsed);
         return ApiResponse.ok(res, "Accounts fetched successfully", data)
     } catch (error) {

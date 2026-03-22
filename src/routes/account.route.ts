@@ -16,6 +16,13 @@ const accountRoute = router.Router();
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
+ *         name: key
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Key search displayName, email and code
+ * 
+ *       - in: query
  *         name: page
  *         schema:
  *           type: number

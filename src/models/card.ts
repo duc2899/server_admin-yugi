@@ -22,7 +22,6 @@ export interface ICard {
     originCode: string;
     createdTime: Date;
     updatedTime: Date;
-
 }
 
 const CardSchema: Schema = new Schema<ICard>(

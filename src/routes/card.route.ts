@@ -58,6 +58,7 @@ cardRoute.get("/", getAllCardsController);
  *         name: type
  *         schema:
  *           type: string
+ *           default: MONSTER
  *         required: false
  *         description: Type of card
  *
@@ -83,11 +84,18 @@ cardRoute.get("/", getAllCardsController);
  *         description: Category of monster
  *
  *       - in: query
- *         name: level
+ *         name: gte
  *         schema:
  *           type: number
  *         required: false
- *         description: Level of monster
+ *         description: Filter monsters with level greater than or equal to this value
+ * 
+ *       - in: query
+ *         name: lte
+ *         schema:
+ *           type: number
+ *         required: false
+ *         description: Filter monsters with level less than or equal to this value
  *
  *       - in: query
  *         name: spellType

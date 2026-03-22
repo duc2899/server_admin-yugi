@@ -1,4 +1,4 @@
-import { SearchCardOptions } from "../types/cards";
+import { SearchCardOptions, TYPE_CARDS } from "../types/cards";
 import { PaginationOptions } from "../types/common";
 import Card from "../models/card";
 
@@ -30,7 +30,8 @@ const searchCards = async (options: SearchCardOptions) => {
     monsterType,
     monsterAttribute,
     monsterCategory,
-    level,
+    lte,
+    gte,
     spellType,
     trapType,
     sortBy = "name",
@@ -51,18 +52,24 @@ const searchCards = async (options: SearchCardOptions) => {
   }
 
   // 🐉 Monster filters (chỉ khi là monster)
-  if (type === "MONSTER") {
+  if (type === TYPE_CARDS.MONSTER) {
     if (monsterType) {
-      query.monsterType = monsterType;
+      query.monsterType = { $in: monsterType };
     }
 
     if (monsterAttribute?.length) {
       query.monsterAttribute = { $in: monsterAttribute };
     }
-
-    if (level) {
-      query.level = level;
+    
+    
+    // 🎯 LEVEL FILTER
+    if (gte !== undefined || lte !== undefined) {
+      query.level = {
+        ...(gte !== undefined && { $gte: gte }),
+        ...(lte !== undefined && { $lte: lte }),
+      };
     }
+
 
     if (monsterCategory?.length) {
       query.monsterCategories = { $in: monsterCategory };
@@ -71,12 +78,12 @@ const searchCards = async (options: SearchCardOptions) => {
   }
 
   // ✨ Spell filter
-  if (type === "SPELL" && spellType) {
+  if (type === TYPE_CARDS.SPELL && spellType) {
     query.spellType = spellType;
   }
 
   // 🪤 Trap filter
-  if (type === "TRAP" && trapType) {
+  if (type === TYPE_CARDS.TRAP && trapType) {
     query.trapType = trapType;
   }
 

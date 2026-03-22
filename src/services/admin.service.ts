@@ -2,9 +2,9 @@ import { requestSetVersionClient } from '../types/admin';
 import AccountAdmin from "../models/accountAdmin";
 import Config from "../models/config";
 import { requestChangeRole } from "../types/admin";
-import { PaginationOptions } from "../types/common";
 import throwError from "../utils/throwError";
 import { STATUS_CODES } from '../constants/status-codes.';
+import { GetAccountsOptions } from '../types/account';
 
 const changeRoleService = async ({ role, _id }: requestChangeRole) => {
     try {
@@ -21,17 +21,31 @@ const changeRoleService = async ({ role, _id }: requestChangeRole) => {
     }
 }
 
-const getAllAccountsService = async ({ page = 1, limit = 10 }: PaginationOptions) => {
+const getAllAccountsService = async (options: GetAccountsOptions) => {
+    const { page = 1, limit = 10, key } = options;
     const skip = (page - 1) * limit;
 
+    const query: any = {};
+
+    if (key?.trim()) {
+        const k = key.trim();
+
+        query.$or = [
+            { fullName: { $regex: k, $options: "i" } },
+            { username: { $regex: k, $options: "i" } },
+            { code: { $regex: k, $options: "i" } },
+        ];
+    }
+
+
     const [data, total] = await Promise.all([
-        AccountAdmin.find()
+        AccountAdmin.find(query)
             .sort({ createdTime: -1 })
             .select("-password")
             .skip(skip)
             .limit(limit)
             .lean(),
-        AccountAdmin.countDocuments()
+        AccountAdmin.countDocuments(query)
     ]);
 
     return {

@@ -3,16 +3,21 @@ import { PaginationOptions } from "./common";
 export interface SearchCardOptions extends PaginationOptions {
   name?: string;
   type?: string; // monster | spell | trap
-  monsterType?: string;
+  monsterType?: string[];
   monsterAttribute?: string[];
   monsterCategory?: string[];
-  level?: number;
+  gte?: number;
+  lte?: number;
   spellType?: string;
   trapType?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
-export const TYPE_CARDS = ["MONSTER", "SPELL", "TRAP"] as const;
+export const TYPE_CARDS = {
+  MONSTER: "MONSTER",
+  SPELL: "SPELL",
+  TRAP: "TRAP",
+} as const;
 
 export const MONSTER_ATTRIBUTES = [
   "DARK",

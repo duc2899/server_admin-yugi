@@ -38,13 +38,20 @@ adminRoute.post("/change-role", authMiddleware, roleMiddleware(RoleAdmin.ADMIN),
 
 /**
  * @swagger
- * /api/v1/admin:
+ * /api/v1/admin/accounts:
  *   get:
  *     summary: Get all accounts
  *     tags: [Services Admin]
  *     security:
  *       - bearerAuth: []
  *     parameters:
+ *       - in: query
+ *         name: key
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Key search fullName, username and code
+ * 
  *       - in: query
  *         name: page
  *         schema:
@@ -65,7 +72,7 @@ adminRoute.post("/change-role", authMiddleware, roleMiddleware(RoleAdmin.ADMIN),
  *       200:
  *         description: Success
  */
-adminRoute.get("/", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), getAllAccountsController);
+adminRoute.get("/accounts", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), getAllAccountsController);
 
 /**
  * @swagger
