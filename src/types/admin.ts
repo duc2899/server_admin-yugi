@@ -12,3 +12,7 @@ export interface requestGetVersionClient {
 export interface requestSetVersionClient {
     version: string
 }
+
+export interface requestToggleBanUser {
+    _id: string
+}

@@ -1,6 +1,6 @@
 import type { Response, NextFunction } from "express";
-import { changeRoleService, getAllAccountsService, getVersionClientService, setVersionClientService } from "../services/admin.service";
-import { changeRoleSchema, setVersionClientSchema } from "../schemas/adminSchema";
+import { changeRoleService, getAllAccountsService, getVersionClientService, setVersionClientService, toggleBanUserService } from "../services/admin.service";
+import { changeRoleSchema, setVersionClientSchema, toggleBanSchema } from "../schemas/adminSchema";
 import { AppRequest } from "../types/common";
 import { ApiResponse } from "../utils/api-response";
 import { getAccountsSchema } from "../schemas/accountSchema";
@@ -44,4 +44,14 @@ const setVersionClientController = async (req: AppRequest, res: Response, next: 
     }
 };
 
-export { changeRoleController, getAllAccountsController, getVersionClientController, setVersionClientController }
+const toggleBanUserController = async (req: AppRequest, res: Response, next: NextFunction) => {
+    try {
+        const parsed = toggleBanSchema.parse(req.body);
+        const data = await toggleBanUserService(parsed);
+        return ApiResponse.ok(res, "Toggle ban successfully", data)
+    } catch (error) {
+        next(error);
+    }
+};
+
+export { changeRoleController, getAllAccountsController, getVersionClientController, setVersionClientController, toggleBanUserController }

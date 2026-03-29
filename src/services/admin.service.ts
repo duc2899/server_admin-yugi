@@ -1,4 +1,4 @@
-import { requestSetVersionClient } from '../types/admin';
+import { requestSetVersionClient, requestToggleBanUser } from '../types/admin';
 import AccountAdmin from "../models/accountAdmin";
 import Config from "../models/config";
 import { requestChangeRole } from "../types/admin";
@@ -60,26 +60,54 @@ const getAllAccountsService = async (options: GetAccountsOptions) => {
 }
 
 const getVersionClientService = async () => {
-    const config = await Config.findOne({ _id: "CLIENT_VERSION" }).lean();
-    if (!config) {
-        return throwError("Not found config", STATUS_CODES.NOT_FOUND);
-    }
+    try {
+        const config = await Config.findOne({ _id: "CLIENT_VERSION" }).lean();
+        if (!config) {
+            return throwError("Not found config", STATUS_CODES.NOT_FOUND);
+        }
 
-    return config.data;
+        return config.data;
+    } catch (error: any) {
+        throw error;
+    }
 }
 
 const setVersionClientService = async ({ version }: requestSetVersionClient) => {
-    const config = await Config.findOneAndUpdate(
-        { _id: "CLIENT_VERSION" },
-        { data: { version } },
-        { new: true }
-    );
+    try {
+        const config = await Config.findOneAndUpdate(
+            { _id: "CLIENT_VERSION" },
+            { data: { version } },
+            { new: true }
+        );
 
-    if (!config) {
-        return throwError("Not found config", STATUS_CODES.NOT_FOUND);
+        if (!config) {
+            return throwError("Not found config", STATUS_CODES.NOT_FOUND);
+        }
+
+        return config;
+    } catch (error: any) {
+        throw error;
     }
-
-    return config;
 };
 
-export { changeRoleService, getAllAccountsService, getVersionClientService, setVersionClientService }
+const toggleBanUserService = async ({ _id }: requestToggleBanUser) => {
+    try {
+        const user = await AccountAdmin.findById(_id);
+
+        if (!user) {
+            return throwError("User not found", STATUS_CODES.NOT_FOUND);
+        }
+
+        user.isDisabled = !user.isDisabled;
+        await user.save();
+
+        return {
+            _id: user._id,
+            isDisabled: user.isDisabled
+        };
+    } catch (error: any) {
+        throw error;
+    }
+}
+
+export { changeRoleService, getAllAccountsService, getVersionClientService, setVersionClientService, toggleBanUserService }

@@ -1,5 +1,5 @@
 import router from "express";
-import { changeRoleController, getAllAccountsController, getVersionClientController, setVersionClientController } from "../controllers/admin.controller";
+import { changeRoleController, getAllAccountsController, getVersionClientController, setVersionClientController, toggleBanUserController } from "../controllers/admin.controller";
 import authMiddleware from "../middlewares/authMiddleware";
 import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAdmin } from "../models/accountAdmin";
@@ -113,6 +113,34 @@ adminRoute.get("/get-version-client", authMiddleware, getVersionClientController
  *         description: Change role successfully
  */
 adminRoute.post("/set-version-client", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), setVersionClientController);
+
+
+/**
+ * @swagger
+ * /api/v1/admin/toggle-ban:
+ *   post:
+ *     summary: Toggle Ban
+ *     tags: [Services Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - _id
+ *             properties:
+ *               _id:
+ *                 type: string
+ *                 example: abcwq
+ *     responses:
+ *       200:
+ *         description: Toggle ban successfully
+ */
+adminRoute.post("/toggle-ban", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), toggleBanUserController);
+
 
 
 export default adminRoute;

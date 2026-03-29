@@ -13,3 +13,8 @@ export const changeRoleSchema = z.object({
 export const setVersionClientSchema = z.object({
     version: versionSchema
 })
+
+
+export const toggleBanSchema = z.object({
+    _id: z.string(),
+})
