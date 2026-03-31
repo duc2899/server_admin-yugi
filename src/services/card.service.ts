@@ -26,7 +26,7 @@ const searchCards = async (options: SearchCardOptions) => {
     page = 1,
     limit = 10,
     name,
-    type,
+    category,
     monsterType,
     monsterAttribute,
     monsterCategory,
@@ -34,6 +34,8 @@ const searchCards = async (options: SearchCardOptions) => {
     gte,
     spellType,
     trapType,
+    atk,
+    def,
     sortBy = "name",
     sortOrder = "asc",
   } = options;
@@ -46,13 +48,13 @@ const searchCards = async (options: SearchCardOptions) => {
     query.name = { $regex: name, $options: "i" };
   }
 
-  // 🎴 Filter type
-  if (type) {
-    query.type = type;
+  // 🎴 Filter category
+  if (category) {
+    query.type = category;
   }
 
   // 🐉 Monster filters (chỉ khi là monster)
-  if (type === TYPE_CARDS.MONSTER) {
+  if (category === TYPE_CARDS.MONSTER) {
     if (monsterType) {
       query.monsterType = { $in: monsterType };
     }
@@ -70,6 +72,15 @@ const searchCards = async (options: SearchCardOptions) => {
       };
     }
 
+      // 🎯 ATK FILTER
+    if (atk !== undefined) {
+      query.atk = { $eq: atk };
+    }
+
+      // 🎯 DEF FILTER
+    if (def !== undefined) {
+      query.def = { $eq: def };
+    }
 
     if (monsterCategory?.length) {
       query.monsterCategories = { $in: monsterCategory };
@@ -78,12 +89,12 @@ const searchCards = async (options: SearchCardOptions) => {
   }
 
   // ✨ Spell filter
-  if (type === TYPE_CARDS.SPELL && spellType) {
+  if (category === TYPE_CARDS.SPELL && spellType) {
     query.spellType = spellType;
   }
 
   // 🪤 Trap filter
-  if (type === TYPE_CARDS.TRAP && trapType) {
+  if (category === TYPE_CARDS.TRAP && trapType) {
     query.trapType = trapType;
   }
 

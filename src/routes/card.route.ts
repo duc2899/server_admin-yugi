@@ -96,7 +96,21 @@ cardRoute.get("/", getAllCardsController);
  *           type: number
  *         required: false
  *         description: Filter monsters with level less than or equal to this value
- *
+ * 
+ *       - in: query
+ *         name: atk
+ *         schema:
+ *           type: number
+ *         required: false
+ *         description: Filter monsters with atk equal to this value
+ * 
+ *       - in: query
+ *         name: def
+ *         schema:
+ *           type: number
+ *         required: false
+ *         description: Filter monsters with def equal to this value
+ * 
  *       - in: query
  *         name: spellType
  *         schema:

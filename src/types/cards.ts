@@ -2,7 +2,7 @@ import { PaginationOptions } from "./common";
 
 export interface SearchCardOptions extends PaginationOptions {
   name?: string;
-  type?: string; // monster | spell | trap
+  category?: string; // monster | spell | trap
   monsterType?: string[];
   monsterAttribute?: string[];
   monsterCategory?: string[];
@@ -11,6 +11,8 @@ export interface SearchCardOptions extends PaginationOptions {
   spellType?: string;
   trapType?: string;
   sortBy?: string;
+  atk?: number;
+  def?: number;
   sortOrder?: "asc" | "desc";
 }
 export const TYPE_CARDS = {
