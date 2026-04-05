@@ -5,6 +5,7 @@ import { loginSchema, registerSchema } from "../schemas/authSchema";
 import { AppRequest } from "../types/common";
 import { EXPRIE_COOKIE } from "../constants/common";
 import { ApiResponse } from "../utils/api-response";
+import env from "../configs/env";
 
 const registerController = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
@@ -20,11 +21,11 @@ const loginController = async (req: AppRequest, res: Response, next: NextFunctio
     try {
         const parsed = loginSchema.parse(req.body);
         const result = await loginService(parsed);
-
+        const isProduction = env.NODE_ENV === "production";
         res.cookie("access_token", result.token, {
             httpOnly: true,
-            secure: false, // true nếu dùng https
-            sameSite: "lax",
+            secure: isProduction, // true nếu dùng https
+            sameSite: isProduction ? "none" : "lax", // none nếu dùng https, lax nếu localhost
             maxAge: EXPRIE_COOKIE // 1 ngày
         })
         return ApiResponse.ok(res, "Login successful", result)
