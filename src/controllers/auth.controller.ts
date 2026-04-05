@@ -7,6 +7,8 @@ import { EXPRIE_COOKIE } from "../constants/common";
 import { ApiResponse } from "../utils/api-response";
 import env from "../configs/env";
 
+const isProduction = env.NODE_ENV === "production";
+
 const registerController = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
         const parsed = registerSchema.parse(req.body);
@@ -21,7 +23,6 @@ const loginController = async (req: AppRequest, res: Response, next: NextFunctio
     try {
         const parsed = loginSchema.parse(req.body);
         const result = await loginService(parsed);
-        const isProduction = env.NODE_ENV === "production";
         res.cookie("access_token", result.token, {
             httpOnly: true,
             secure: isProduction, // true nếu dùng https
@@ -48,11 +49,11 @@ const logoutController = async (req: AppRequest, res: Response, next: NextFuncti
     try {
         const _id = req.user?._id;
         const user = await logoutService({ _id });
-        
+
         res.cookie("access_token", "", {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: isProduction, // true nếu dùng https
+            sameSite: isProduction ? "none" : "lax", // none nếu dùng https, lax nếu localhost
             expires: new Date(0)
         });
 
