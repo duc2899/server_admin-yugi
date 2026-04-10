@@ -36,6 +36,7 @@ const searchCards = async (options: SearchCardOptions) => {
     trapType,
     atk,
     def,
+    cardLimitStatus,
     sortBy = "name",
     sortOrder = "asc",
   } = options;
@@ -96,6 +97,11 @@ const searchCards = async (options: SearchCardOptions) => {
   // 🪤 Trap filter
   if (category === TYPE_CARDS.TRAP && trapType) {
     query.trapType = trapType;
+  }
+
+  // 🚫 Card limit status filter
+  if (cardLimitStatus !== undefined) {
+    query.cardLimitStatus = cardLimitStatus;
   }
 
   const sortOption: any = {};

@@ -13,8 +13,10 @@ export interface SearchCardOptions extends PaginationOptions {
   sortBy?: string;
   atk?: number;
   def?: number;
+  cardLimitStatus:  CARD_LIMIT_STATUS;
   sortOrder?: "asc" | "desc";
 }
+
 export const TYPE_CARDS = {
   MONSTER: "MONSTER",
   SPELL: "SPELL",
@@ -89,3 +91,5 @@ export const MONSTER_CATEGORIES = [
   "GEMINI",
   "TUNER",
 ] as const;
+
+export type CARD_LIMIT_STATUS = 0 | 1 | 2 | 3; // 0: Ban, 1: Limited, 2: Semi-Private, 3: Default

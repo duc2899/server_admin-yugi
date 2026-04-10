@@ -41,6 +41,14 @@ export const searchCardSchema = z.object({
   def: z.coerce.number().optional(),
   spellType: z.enum(SPELL_TYPES).optional(),
   trapType: z.enum(TRAP_TYPES).optional(),
+  cardLimitStatus: z.coerce.number().pipe(
+    z.union([
+      z.literal(0),
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+    ])
+  ).default(3),
   sortBy: z.enum(["name", "atk", "def", "level"]).default("name"),
   sortOrder: z.enum(["asc", "desc"]).default("asc"),
 });

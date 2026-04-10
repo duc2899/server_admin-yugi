@@ -131,6 +131,13 @@ cardRoute.get("/", getAllCardsController);
  *           type: string
  *         required: false
  *         description: Sort by name, atk, def or level
+ * 
+ *       - in: query
+ *         name: cardLimitStatus
+ *         schema:
+ *           type: number
+ *         required: false
+ *         description: Card limit status
  *
  *       - in: query
  *         name: sortOrder
