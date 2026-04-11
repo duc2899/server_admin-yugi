@@ -54,6 +54,7 @@ const CardSchema: Schema = new Schema<ICard>(
 );
 
 CardSchema.index({ name: 1 });
+CardSchema.index({ code: 1 });
 CardSchema.index({ type: 1 });
 CardSchema.index({ monsterType: 1 });
 CardSchema.index({ monsterAttribute: 1 });

@@ -2,6 +2,7 @@ import router from "express";
 import {
   getAllCardsController,
   searchCardsController,
+  setCardStatusController,
 } from "../controllers/card.controller";
 import authMiddleware from "../middlewares/authMiddleware";
 
@@ -167,5 +168,36 @@ cardRoute.get("/", getAllCardsController);
  *         description: Success
  */
 cardRoute.get("/search", authMiddleware, searchCardsController);
+
+/**
+ * @swagger
+ * /api/v1/cards/set-status:
+ *   post:
+ *     summary: Set status of a card
+ *     tags: [Cards]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - code
+ *               - status
+ *             properties:
+ *               code:
+ *                 type: string
+ *                 example: abcwq
+ *               status:
+ *                 type: number
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Change status successfully
+ */
+cardRoute.post("/set-status", authMiddleware, setCardStatusController);
+
 
 export default cardRoute;

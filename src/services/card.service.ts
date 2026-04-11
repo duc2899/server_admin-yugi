@@ -1,6 +1,7 @@
-import { SearchCardOptions, TYPE_CARDS } from "../types/cards";
+import { requestCardSetStatus, SearchCardOptions, TYPE_CARDS } from "../types/cards";
 import { PaginationOptions } from "../types/common";
 import Card from "../models/card";
+import throwError from "../utils/throwError";
 
 const getAllCards = async ({ page = 1, limit = 10 }: PaginationOptions) => {
   const skip = (page - 1) * limit;
@@ -63,8 +64,8 @@ const searchCards = async (options: SearchCardOptions) => {
     if (monsterAttribute?.length) {
       query.monsterAttribute = { $in: monsterAttribute };
     }
-    
-    
+
+
     // 🎯 LEVEL FILTER
     if (gte !== undefined || lte !== undefined) {
       query.level = {
@@ -73,12 +74,12 @@ const searchCards = async (options: SearchCardOptions) => {
       };
     }
 
-      // 🎯 ATK FILTER
+    // 🎯 ATK FILTER
     if (atk !== undefined) {
       query.atk = { $eq: atk };
     }
 
-      // 🎯 DEF FILTER
+    // 🎯 DEF FILTER
     if (def !== undefined) {
       query.def = { $eq: def };
     }
@@ -98,7 +99,7 @@ const searchCards = async (options: SearchCardOptions) => {
   if (category === TYPE_CARDS.TRAP && trapType) {
     query.trapType = trapType;
   }
-
+  
   // 🚫 Card limit status filter
   if (cardLimitStatus !== undefined) {
     query.cardLimitStatus = cardLimitStatus;
@@ -123,4 +124,17 @@ const searchCards = async (options: SearchCardOptions) => {
   };
 };
 
-export { getAllCards, searchCards };
+const setStatusCardService = async ({ code, status }: requestCardSetStatus) => {
+  const card = await Card.findOneAndUpdate(
+    { code },
+    { cardLimitStatus: status },
+    { new: true }
+  );
+
+  if (!card) {
+    return throwError("Card not found", 404);
+  }
+
+  return card;
+};
+export { getAllCards, searchCards, setStatusCardService };

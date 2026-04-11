@@ -1,8 +1,8 @@
 import type { Response, NextFunction } from "express";
 
-import { getAllCards, searchCards } from "../services/card.service";
+import { getAllCards, searchCards, setStatusCardService } from "../services/card.service";
 import { paginationSchema } from "../schemas/paginationSchema";
-import { searchCardSchema } from "../schemas/cardSchema";
+import { searchCardSchema, setCardStatusSchema } from "../schemas/cardSchema";
 import { AppRequest } from "../types/common";
 import { ApiResponse } from "../utils/api-response";
 
@@ -15,6 +15,7 @@ const getAllCardsController = async (req: AppRequest, res: Response, next: NextF
         next(error);
     }
 };
+
 const searchCardsController = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
         const parsed = searchCardSchema.parse(req.query);
@@ -24,4 +25,15 @@ const searchCardsController = async (req: AppRequest, res: Response, next: NextF
         next(error);
     }
 }
-export { getAllCardsController, searchCardsController };
+
+const setCardStatusController = async (req: AppRequest, res: Response, next: NextFunction) => {
+    try {
+        const parsed = setCardStatusSchema.parse(req.body);
+        const data = await setStatusCardService(parsed);
+        return ApiResponse.ok(res, "Card status updated successfully", data)
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { getAllCardsController, searchCardsController, setCardStatusController };

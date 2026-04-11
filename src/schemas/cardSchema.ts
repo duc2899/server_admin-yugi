@@ -48,7 +48,20 @@ export const searchCardSchema = z.object({
       z.literal(2),
       z.literal(3),
     ])
-  ).default(3),
+  ).optional(),
   sortBy: z.enum(["name", "atk", "def", "level"]).default("name"),
   sortOrder: z.enum(["asc", "desc"]).default("asc"),
 });
+
+export const setCardStatusSchema = z.object({
+  code: z.string(),
+  status: z.coerce.number().pipe(
+    z.union([
+      z.literal(0),
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+    ])
+  ),
+});
+

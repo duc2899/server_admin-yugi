@@ -13,8 +13,13 @@ export interface SearchCardOptions extends PaginationOptions {
   sortBy?: string;
   atk?: number;
   def?: number;
-  cardLimitStatus:  CARD_LIMIT_STATUS;
+  cardLimitStatus?: CARD_LIMIT_STATUS;
   sortOrder?: "asc" | "desc";
+}
+
+export interface requestCardSetStatus {
+  code: string;
+  status: CARD_LIMIT_STATUS;
 }
 
 export const TYPE_CARDS = {
