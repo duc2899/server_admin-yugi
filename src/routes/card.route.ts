@@ -4,7 +4,9 @@ import {
   searchCardsController,
   setCardStatusController,
 } from "../controllers/card.controller";
-import authMiddleware from "../middlewares/authMiddleware";
+import authMiddleware from "../middlewares/auth.middleware";
+import { cacheMiddleware } from "../middlewares/cache.middleware";
+import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
 
 const cardRoute = router.Router();
 
@@ -37,7 +39,17 @@ const cardRoute = router.Router();
  *       200:
  *         description: Success
  */
-cardRoute.get("/", getAllCardsController);
+cardRoute.get(
+  "/",
+  authMiddleware,
+  cacheMiddleware({
+    ttl: 15,
+    prefix: "cards-list",
+    tag: "cards",
+    skipAuth: true,
+  }),
+  getAllCardsController
+);
 
 /**
  * @swagger
@@ -167,7 +179,17 @@ cardRoute.get("/", getAllCardsController);
  *       200:
  *         description: Success
  */
-cardRoute.get("/search", authMiddleware, searchCardsController);
+cardRoute.get(
+  "/search",
+  authMiddleware,
+  cacheMiddleware({
+    ttl: 5,
+    prefix: "cards-search",
+    tag: "cards",
+    skipAuth: true,
+  }),
+  searchCardsController
+);
 
 /**
  * @swagger
@@ -197,7 +219,12 @@ cardRoute.get("/search", authMiddleware, searchCardsController);
  *       200:
  *         description: Change status successfully
  */
-cardRoute.post("/set-status", authMiddleware, setCardStatusController);
+cardRoute.post(
+  "/set-status",
+  authMiddleware,
+  clearCacheAfterSuccess("cards"),
+  setCardStatusController
+);
 
 
 export default cardRoute;

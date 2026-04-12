@@ -9,6 +9,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger";
 import { configureGracefulShutdown } from "./utils/shutdown";
 import { logger } from "./utils/logger";
+import connectRedis from "./configs/redis";
 
 
 const app = express();
@@ -21,6 +22,9 @@ setupSecurity(app);
 
 // connect mongo
 connectDB();
+
+// connect redis
+connectRedis.connect();
 
 // setup routes
 app.use("/api/v1", initRouter);

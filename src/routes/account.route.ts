@@ -1,8 +1,9 @@
 import router from "express";
-import authMiddleware from "../middlewares/authMiddleware";
+import authMiddleware from "../middlewares/auth.middleware";
 import { fetchAllAccounts } from "../controllers/account.controller";
 import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAdmin } from "../models/accountAdmin";
+import { cacheMiddleware } from "../middlewares/cache.middleware";
 
 const accountRoute = router.Router();
 
@@ -42,6 +43,17 @@ const accountRoute = router.Router();
  *       200:
  *         description: Success
  */
-accountRoute.get("/", authMiddleware, roleMiddleware(RoleAdmin.ADMIN, RoleAdmin.NORMAL), fetchAllAccounts);
+accountRoute.get(
+    "/",
+    authMiddleware,
+    roleMiddleware(RoleAdmin.ADMIN, RoleAdmin.NORMAL),
+    cacheMiddleware({
+        ttl: 5,
+        prefix: "accounts-list",
+        tag: "accounts",
+        skipAuth: true,
+    }),
+    fetchAllAccounts
+);
 
 export default accountRoute;

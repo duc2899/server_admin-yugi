@@ -1,11 +1,13 @@
 import type { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+
 import throwError from "../utils/throwError";
 import { AppRequest, JwtPayload } from "../types/common";
 import { STATUS_CODES } from "../constants/status-codes.";
 import env from "../configs/env";
+import { TokenBlacklistService } from "../services/tokenBlacklist.service";
 
-const authMiddleware = (req: AppRequest, res: Response, next: NextFunction) => {
+const authMiddleware = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
         let token: string | undefined;
 
@@ -23,7 +25,12 @@ const authMiddleware = (req: AppRequest, res: Response, next: NextFunction) => {
         }
 
         if (!token) {
-            throw throwError("Unauthorized", STATUS_CODES.UNAUTHORIZED);
+            return throwError("Unauthorized", STATUS_CODES.UNAUTHORIZED);
+        }
+
+        const isBlocked = await TokenBlacklistService.isBlacklisted(token);
+        if (isBlocked) {
+            return throwError("Unauthorized", STATUS_CODES.UNAUTHORIZED);
         }
 
         const decoded = jwt.verify(

@@ -1,6 +1,7 @@
 import router from "express";
 import { getAllTournamentController, getTournamentDetailController } from "../controllers/tournament.controller";
-import authMiddleware from "../middlewares/authMiddleware";
+import authMiddleware from "../middlewares/auth.middleware";
+import { cacheMiddleware } from "../middlewares/cache.middleware";
 
 const tournamentRoute = router.Router();
 
@@ -54,7 +55,17 @@ const tournamentRoute = router.Router();
  *       200:
  *         description: Success
  */
-tournamentRoute.get("/", getAllTournamentController);
+tournamentRoute.get(
+    "/",
+    authMiddleware,
+    cacheMiddleware({
+        ttl: 5,
+        prefix: "tournaments-list",
+        tag: "tournaments",
+        skipAuth: true,
+    }),
+    getAllTournamentController
+);
 
 /**
  * @swagger
@@ -77,5 +88,16 @@ tournamentRoute.get("/", getAllTournamentController);
  *       404:
  *         description: Tournament not found
  */
-tournamentRoute.get("/:id", getTournamentDetailController);
+tournamentRoute.get(
+    "/:id",
+    authMiddleware,
+    cacheMiddleware({
+        ttl: 5,
+        prefix: "tournament-detail",
+        tag: "tournament-detail",
+        skipAuth: true,
+    }),
+    getTournamentDetailController
+);
+
 export default tournamentRoute;

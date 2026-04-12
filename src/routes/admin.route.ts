@@ -1,8 +1,10 @@
 import router from "express";
 import { changeRoleController, getAllAccountsController, getVersionClientController, setVersionClientController, toggleBanUserController } from "../controllers/admin.controller";
-import authMiddleware from "../middlewares/authMiddleware";
+import authMiddleware from "../middlewares/auth.middleware";
 import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAdmin } from "../models/accountAdmin";
+import { cacheMiddleware } from "../middlewares/cache.middleware";
+import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
 
 const adminRoute = router.Router();
 
@@ -34,7 +36,13 @@ const adminRoute = router.Router();
  *       200:
  *         description: Change role successfully
  */
-adminRoute.post("/change-role", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), changeRoleController);
+adminRoute.post(
+    "/change-role",
+    authMiddleware,
+    roleMiddleware(RoleAdmin.ADMIN),
+    clearCacheAfterSuccess("accounts-admin"),
+    changeRoleController
+);
 
 /**
  * @swagger
@@ -72,7 +80,18 @@ adminRoute.post("/change-role", authMiddleware, roleMiddleware(RoleAdmin.ADMIN),
  *       200:
  *         description: Success
  */
-adminRoute.get("/accounts", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), getAllAccountsController);
+adminRoute.get(
+    "/accounts",
+    authMiddleware,
+    roleMiddleware(RoleAdmin.ADMIN),
+    cacheMiddleware({
+        ttl: 5,
+        prefix: "accounts-admin-list",
+        tag: "accounts-admin",
+        skipAuth: true,
+    }),
+    getAllAccountsController
+);
 
 /**
  * @swagger
@@ -86,7 +105,17 @@ adminRoute.get("/accounts", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), get
  *       200:
  *         description: Success
  */
-adminRoute.get("/get-version-client", authMiddleware, getVersionClientController);
+adminRoute.get(
+    "/get-version-client",
+    authMiddleware,
+    cacheMiddleware({
+        ttl: 30,
+        prefix: "version-client",
+        tag: "version-client",
+        skipAuth: true,
+    }),
+    getVersionClientController
+);
 
 /**
  * @swagger
@@ -112,8 +141,13 @@ adminRoute.get("/get-version-client", authMiddleware, getVersionClientController
  *       200:
  *         description: Change role successfully
  */
-adminRoute.post("/set-version-client", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), setVersionClientController);
-
+adminRoute.post(
+    "/set-version-client",
+    authMiddleware,
+    roleMiddleware(RoleAdmin.ADMIN),
+    clearCacheAfterSuccess("version-client"),
+    setVersionClientController
+);
 
 /**
  * @swagger
@@ -139,8 +173,12 @@ adminRoute.post("/set-version-client", authMiddleware, roleMiddleware(RoleAdmin.
  *       200:
  *         description: Toggle ban successfully
  */
-adminRoute.post("/toggle-ban", authMiddleware, roleMiddleware(RoleAdmin.ADMIN), toggleBanUserController);
-
-
+adminRoute.post(
+    "/toggle-ban",
+    authMiddleware,
+    roleMiddleware(RoleAdmin.ADMIN),
+    clearCacheAfterSuccess("accounts-admin"),
+    toggleBanUserController
+);
 
 export default adminRoute;

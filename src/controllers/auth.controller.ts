@@ -1,4 +1,5 @@
 import type { Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
 import { loginService, registerService, getProfileService, logoutService } from "../services/auth.service";
 import { loginSchema, registerSchema } from "../schemas/authSchema";
@@ -6,6 +7,7 @@ import { AppRequest } from "../types/common";
 import { EXPRIE_COOKIE } from "../constants/common";
 import { ApiResponse } from "../utils/api-response";
 import env from "../configs/env";
+import { TokenBlacklistService } from "../services/tokenBlacklist.service";
 
 const isProduction = env.NODE_ENV === "production";
 
@@ -48,16 +50,30 @@ const getProfileController = async (req: AppRequest, res: Response, next: NextFu
 const logoutController = async (req: AppRequest, res: Response, next: NextFunction) => {
     try {
         const _id = req.user?._id;
-        const user = await logoutService({ _id });
 
-        res.cookie("access_token", "", {
+        const token = req.cookies?.access_token;
+
+        if (token) {
+            const decoded: any = jwt.decode(token);
+
+            if (decoded?.exp) {
+                const ttlSeconds = decoded.exp - Math.floor(Date.now() / 1000);
+
+                if (ttlSeconds > 0) {
+                    await TokenBlacklistService.blacklistToken(token, ttlSeconds);
+                }
+            }
+        }
+
+        const data = await logoutService({ _id });
+
+        res.clearCookie("access_token", {
             httpOnly: true,
-            secure: isProduction, // true nếu dùng https
-            sameSite: isProduction ? "none" : "lax", // none nếu dùng https, lax nếu localhost
-            expires: new Date(0)
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
         });
 
-        return ApiResponse.ok(res, "Logout successful", user);
+        return ApiResponse.ok(res, "Logout successful", data);
     } catch (error) {
         next(error);
     }
