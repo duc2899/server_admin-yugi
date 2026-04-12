@@ -25,6 +25,7 @@ export const setupSecurity = (app: Express) => {
     app.use(bodyParser.json({ limit: "10mb" }));
     app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 
+    app.set("trust proxy", 1); // nếu app chạy sau proxy (ví dụ: Nginx)
     app.use(rateLimiter);
 
     // Logger request
