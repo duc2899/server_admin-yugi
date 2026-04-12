@@ -32,13 +32,13 @@ if "%LOCAL%"=="%REMOTE%" (
 echo ===============================
 echo New code detected. Pulling...
 echo ===============================
-git pull
+git pull origin main
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo ===============================
 echo Installing dependencies...
 echo ===============================
-npm install
+npm i
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo ===============================
