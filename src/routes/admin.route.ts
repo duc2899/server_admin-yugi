@@ -5,6 +5,7 @@ import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAdmin } from "../models/accountAdmin";
 import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
+import { createDeckController } from "../controllers/deckAdmin.controller";
 
 const adminRoute = router.Router();
 
@@ -179,6 +180,53 @@ adminRoute.post(
     roleMiddleware(RoleAdmin.ADMIN),
     clearCacheAfterSuccess("accounts-admin"),
     toggleBanUserController
+);
+
+/**
+ * @swagger
+ * /api/v1/admin/create-deck:
+ *   post:
+ *     summary: Create deck
+ *     tags: [Services Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - type
+ *               - mainDeckCards 
+ *               - sideDeckCards
+ *               - extraDeckCards 
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Hello
+ *               type:
+ *                 type: string
+ *                 example: DEFAULT
+ *               mainDeckCards:
+ *                 type: array
+ *                 example: []
+ *               sideDeckCards:
+ *                 type: array
+ *                 example: []
+ *               extraDeckCards:
+ *                 type: array
+ *                 example: []  
+ *     responses:
+ *       200:
+ *         description: Toggle ban successfully
+ */
+adminRoute.post(
+    "/create-deck",
+    authMiddleware,
+    roleMiddleware(RoleAdmin.ADMIN),
+    createDeckController
 );
 
 export default adminRoute;
