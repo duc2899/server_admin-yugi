@@ -1,3 +1,4 @@
+import { VersionType } from "../constants/version.constant";
 import { RoleAdmin } from "../models/accountAdmin";
 
 export interface requestChangeRole {
@@ -10,6 +11,7 @@ export interface requestGetVersionClient {
 }
 
 export interface requestSetVersionClient {
+    type: VersionType
     version: string
 }
 

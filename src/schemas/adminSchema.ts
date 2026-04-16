@@ -1,5 +1,6 @@
 import z from "zod";
 import { RoleAdmin } from "../models/accountAdmin";
+import { VERSIONS } from "../constants/version.constant";
 
 export const versionSchema = z
     .string()
@@ -11,7 +12,8 @@ export const changeRoleSchema = z.object({
 })
 
 export const setVersionClientSchema = z.object({
-    version: versionSchema
+    version: versionSchema,
+    type: z.enum(VERSIONS, "Invalid Version")
 })
 
 

@@ -134,13 +134,17 @@ adminRoute.get(
  *             type: object
  *             required:
  *               - version
+ *               - type
  *             properties:
  *               version:
  *                 type: string
  *                 example: 0.107
+ *               type:
+ *                 type: string
+ *                 example: CLIENT_VERSION_DEV
  *     responses:
  *       200:
- *         description: Change role successfully
+ *         description: Change version successfully
  */
 adminRoute.post(
     "/set-version-client",

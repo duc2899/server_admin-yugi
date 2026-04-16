@@ -5,6 +5,7 @@ import { requestChangeRole } from "../types/admin";
 import throwError from "../utils/throwError";
 import { STATUS_CODES } from '../constants/status-codes.';
 import { GetAccountsOptions } from '../types/account';
+import { VERSIONS } from '../constants/version.constant';
 
 const changeRoleService = async ({ role, _id }: requestChangeRole) => {
     try {
@@ -61,21 +62,23 @@ const getAllAccountsService = async (options: GetAccountsOptions) => {
 
 const getVersionClientService = async () => {
     try {
-        const config = await Config.findOne({ _id: "CLIENT_VERSION" }).lean();
-        if (!config) {
+        const config = await Config.find({
+            _id: { $in: VERSIONS }
+        }).lean();
+
+        if (!config || config.length === 0) {
             return throwError("Not found config", STATUS_CODES.NOT_FOUND);
         }
-
-        return config.data;
+        return config;
     } catch (error: any) {
         throw error;
     }
 }
 
-const setVersionClientService = async ({ version }: requestSetVersionClient) => {
+const setVersionClientService = async ({ version, type }: requestSetVersionClient) => {
     try {
         const config = await Config.findOneAndUpdate(
-            { _id: "CLIENT_VERSION" },
+            { _id: type },
             { data: { version } },
             { new: true }
         );
