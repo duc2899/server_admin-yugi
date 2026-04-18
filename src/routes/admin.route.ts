@@ -5,7 +5,7 @@ import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAdmin } from "../models/accountAdmin";
 import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
-import { createDeckController } from "../controllers/deckAdmin.controller";
+import { createDeckController, getAllDeckController, getDeckAdminDetailController } from "../controllers/deckAdmin.controller";
 
 const adminRoute = router.Router();
 
@@ -233,4 +233,46 @@ adminRoute.post(
     createDeckController
 );
 
+/**
+ * @swagger
+ * /api/v1/admin/get-decks:
+ *   get:
+ *     summary: Get All Deck
+ *     tags: [Services Admin]
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+adminRoute.get(
+    "/get-decks",
+    authMiddleware,
+    roleMiddleware(RoleAdmin.ADMIN, RoleAdmin.NORMAL),
+    getAllDeckController
+);
+
+
+/**
+ * @swagger
+ * /api/v1/admin/get-deck/{id}:
+ *   get:
+ *     summary: Get deck detail
+ *     tags: [Services Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Deck ID
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+adminRoute.get(
+    "/get-deck/:id",
+    authMiddleware,
+    getDeckAdminDetailController
+);
 export default adminRoute;

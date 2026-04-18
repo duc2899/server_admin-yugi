@@ -7,3 +7,7 @@ export interface CreateDeckAdminPayload {
     sideDeckCards: { code: string; number: number }[];
     extraDeckCards: { code: string; number: number }[];
 }
+
+export interface getDeckAdminDetialPayload {
+    id: String
+}
