@@ -99,7 +99,7 @@ const searchCards = async (options: SearchCardOptions) => {
   if (category === TYPE_CARDS.TRAP && trapType) {
     query.trapType = trapType;
   }
-  
+
   // 🚫 Card limit status filter
   if (cardLimitStatus !== undefined) {
     query.cardLimitStatus = cardLimitStatus;
@@ -124,10 +124,10 @@ const searchCards = async (options: SearchCardOptions) => {
   };
 };
 
-const setStatusCardService = async ({ code, status }: requestCardSetStatus) => {
+const setStatusCardService = async ({ code, cardLimitStatus, activeStatus }: requestCardSetStatus) => {
   const card = await Card.findOneAndUpdate(
     { code },
-    { cardLimitStatus: status },
+    { cardLimitStatus, activeStatus },
     { new: true }
   );
 

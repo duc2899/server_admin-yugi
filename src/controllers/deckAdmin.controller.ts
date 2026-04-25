@@ -8,7 +8,7 @@ const createDeckController = async (req: AppRequest, res: Response, next: NextFu
     try {
         const paresed = createDeckSchema.parse(req.body);
         const data = await createDeckAdminService(paresed);
-        return ApiResponse.ok(res, "Create a deck successfully", data);
+        return ApiResponse.created(res, "Create a deck successfully", data);
     } catch (error) {
         next(error);
     }

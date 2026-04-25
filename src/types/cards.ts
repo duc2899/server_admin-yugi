@@ -19,7 +19,8 @@ export interface SearchCardOptions extends PaginationOptions {
 
 export interface requestCardSetStatus {
   code: string;
-  status: CARD_LIMIT_STATUS;
+  cardLimitStatus: CARD_LIMIT_STATUS;
+  activeStatus: CARD_ACTIVATE_STATUS
 }
 
 export const TYPE_CARDS = {
