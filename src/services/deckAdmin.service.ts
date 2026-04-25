@@ -1,7 +1,7 @@
 import { STATUS_CODES } from "../constants/status-codes.";
 import { validateDeckCards } from "../helpers/deck.helper";
 import DeckAdmin from "../models/deckAdmin";
-import { CreateDeckAdminPayload, getDeckAdminDetialPayload } from "../types/deckAdmin";
+import { CreateDeckAdminPayload, getDeckAdminDetialPayload, SaveDeckAdminPayload } from "../types/deckAdmin";
 import { generateLongId } from "../utils/generateId";
 import throwError from "../utils/throwError";
 import Card from "../models/card";
@@ -39,7 +39,41 @@ const getAllDeckAdminService = async () => {
         return data.map((deck) => ({
             ...deck,
             _id: deck._id.toString(),
+            isLocal: false
         }));
+    } catch (error) {
+        throw error;
+    }
+};
+
+const saveDeckAdminService = async (payload: SaveDeckAdminPayload) => {
+    try {
+        const { id, name, type, mainDeckCards, sideDeckCards, extraDeckCards } = payload;
+
+        const deck = await DeckAdmin.findById(id);
+        if (!deck) {
+            return throwError("Deck not found", STATUS_CODES.NOT_FOUND);
+        }
+
+        // validate + normalize (return clean deck)
+        const cleanDeck = await validateDeckCards({
+            mainDeckCards,
+            sideDeckCards,
+            extraDeckCards,
+        });
+
+        deck.name = name;
+        deck.type = type;
+        deck.mainDeckCards = cleanDeck.mainDeckCards;
+        deck.sideDeckCards = cleanDeck.sideDeckCards;
+        deck.extraDeckCards = cleanDeck.extraDeckCards;
+
+        await deck.save();
+
+        return {
+            ...deck.toObject(),
+            _id: deck._id.toString(),
+        };
     } catch (error) {
         throw error;
     }
@@ -61,9 +95,7 @@ const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
 
         const uniqueCodes = [...new Set(allCodes)];
 
-        const cardsFromDb = await Card.find({ code: { $in: uniqueCodes } })
-            .select("code name type monsterCategories cardLimitStatus ")
-            .lean();
+        const cardsFromDb = await Card.find({ code: { $in: uniqueCodes } }).lean();
 
         const cardMap = new Map(cardsFromDb.map((c) => [c.code, c]));
 
@@ -77,8 +109,8 @@ const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
                 const type = cardInfo?.type || "";
 
                 return {
-                    ...item,
                     _id: item.code,
+                    number: item.number,
                     name: cardInfo?.name || "",
                     type,
                     category:
@@ -86,6 +118,9 @@ const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
                             ? cardInfo?.monsterCategories?.[0] || ""
                             : "",
                     source,
+                    data: {
+                        ...cardInfo,
+                    }
                 };
             });
         };
@@ -96,6 +131,7 @@ const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
             mainDeckCards: mapDeckCards(deck.mainDeckCards, "MAIN"),
             sideDeckCards: mapDeckCards(deck.sideDeckCards, "SIDE"),
             extraDeckCards: mapDeckCards(deck.extraDeckCards, "EXTRA"),
+            isLocal: false
         };
     } catch (error) {
         throw error;
@@ -104,5 +140,5 @@ const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
 
 
 
-export { createDeckAdminService, getAllDeckAdminService, getDeckAdminDetailService }
+export { createDeckAdminService, getAllDeckAdminService, getDeckAdminDetailService, saveDeckAdminService }
 

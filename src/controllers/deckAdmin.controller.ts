@@ -1,7 +1,7 @@
 import type { Response, NextFunction } from "express";
 import { AppRequest } from "../types/common";
-import { createDeckSchema, getDeckDetailSchema } from "../schemas/deckAdmin.schema";
-import { createDeckAdminService, getAllDeckAdminService, getDeckAdminDetailService } from "../services/deckAdmin.service";
+import { createDeckSchema, getDeckDetailSchema, saveDeckSchema } from "../schemas/deckAdmin.schema";
+import { createDeckAdminService, getAllDeckAdminService, getDeckAdminDetailService, saveDeckAdminService } from "../services/deckAdmin.service";
 import { ApiResponse } from "../utils/api-response";
 
 const createDeckController = async (req: AppRequest, res: Response, next: NextFunction) => {
@@ -33,5 +33,16 @@ const getDeckAdminDetailController = async (req: AppRequest, res: Response, next
     }
 }
 
+const saveDeckController = async (req: AppRequest, res: Response, next: NextFunction) => {
+    try {
+        const paresed = saveDeckSchema.parse(req.body);
+        const data = await saveDeckAdminService(paresed);
+        return ApiResponse.ok(res, "Create a deck successfully", data);
+    } catch (error) {
+        next(error);
+    }
+}
 
-export { createDeckController, getAllDeckController, getDeckAdminDetailController }
+
+
+export { createDeckController, getAllDeckController, getDeckAdminDetailController, saveDeckController }

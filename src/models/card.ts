@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { CARD_LIMIT_STATUS } from "../types/cards";
+import { CARD_ACTIVATE_STATUS, CARD_LIMIT_STATUS } from "../types/cards";
 
 export interface ICard {
     _id: string;
@@ -22,6 +22,7 @@ export interface ICard {
     sourceUrl: string;
     originCode: string;
     cardLimitStatus: CARD_LIMIT_STATUS;
+    activeStatus: CARD_ACTIVATE_STATUS;
     createdTime: Date;
     updatedTime: Date;
 }
@@ -48,6 +49,7 @@ const CardSchema: Schema = new Schema<ICard>(
         sourceUrl: { type: String },
         originCode: { type: String },
         cardLimitStatus: { type: Number, required: true },
+        activeStatus: { type: Number, required: true },
         createdTime: { type: Date, required: true, default: Date.now },
         updatedTime: { type: Date, required: true, default: Date.now },
     }

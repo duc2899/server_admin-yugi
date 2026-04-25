@@ -5,7 +5,7 @@ import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAdmin } from "../models/accountAdmin";
 import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
-import { createDeckController, getAllDeckController, getDeckAdminDetailController } from "../controllers/deckAdmin.controller";
+import { createDeckController, getAllDeckController, getDeckAdminDetailController, saveDeckController } from "../controllers/deckAdmin.controller";
 
 const adminRoute = router.Router();
 
@@ -275,4 +275,57 @@ adminRoute.get(
     authMiddleware,
     getDeckAdminDetailController
 );
+
+
+/**
+ * @swagger
+ * /api/v1/admin/save-deck:
+ *   post:
+ *     summary: Save deck
+ *     tags: [Services Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - name
+ *               - type
+ *               - mainDeckCards 
+ *               - sideDeckCards
+ *               - extraDeckCards 
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 example: 7451186054687625216
+ *               name:
+ *                 type: string
+ *                 example: Hello
+ *               type:
+ *                 type: string
+ *                 example: DEFAULT
+ *               mainDeckCards:
+ *                 type: array
+ *                 example: []
+ *               sideDeckCards:
+ *                 type: array
+ *                 example: []
+ *               extraDeckCards:
+ *                 type: array
+ *                 example: []  
+ *     responses:
+ *       200:
+ *         description: Save deck successfully
+ */
+adminRoute.post(
+    "/save-deck",
+    authMiddleware,
+    roleMiddleware(RoleAdmin.ADMIN),
+    saveDeckController
+);
+
 export default adminRoute;

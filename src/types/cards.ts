@@ -98,3 +98,5 @@ export const MONSTER_CATEGORIES = [
 ] as const;
 
 export type CARD_LIMIT_STATUS = 0 | 1 | 2 | 3; // 0: Ban, 1: Limited, 2: Semi-Private, 3: Default
+
+export type CARD_ACTIVATE_STATUS = 0 | 1; //0: Off, 1: On
