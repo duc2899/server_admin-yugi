@@ -1,10 +1,9 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ApiResponse } from "../utils/api-response";
-import { AppRequest } from "../types/common";
 import env from "../configs/env";
 import mongoose from "mongoose";
 
-export const healthCheck = async (req: AppRequest, res: Response) => {
+export const healthCheck = async (req: Request, res: Response) => {
   return ApiResponse.Success(res, "Service is healthy", {
     status: "healthy",
     timestamp: new Date().toISOString(),
@@ -13,7 +12,7 @@ export const healthCheck = async (req: AppRequest, res: Response) => {
 };
 
 
-export const detailedHealthCheck = async (req: AppRequest, res: Response) => {
+export const detailedHealthCheck = async (req: Request, res: Response) => {
   const healthData = {
     status: "healthy",
     timestamp: new Date().toISOString(),
@@ -35,7 +34,7 @@ export const detailedHealthCheck = async (req: AppRequest, res: Response) => {
   return ApiResponse.Success(res, "Service is healthy", healthData);
 };
 
-export const checkDBHealth = async (req: AppRequest, res: Response, next: NextFunction) => {
+export const checkDBHealth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!mongoose.connection.db) {
       return ApiResponse.notFound(res, "Service is healthy", {

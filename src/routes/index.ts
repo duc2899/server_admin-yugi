@@ -15,5 +15,6 @@ initRoutes.use("/auth", authRoute);
 initRoutes.use("/admin", adminRoute)
 initRoutes.use("/health", healthRoute)
 
+
 export default initRoutes;
 

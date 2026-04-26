@@ -1,13 +1,13 @@
-import type { Response, NextFunction } from "express";
+import type { Response, NextFunction, Request } from "express";
 import jwt from "jsonwebtoken";
 
 import throwError from "../utils/throwError";
-import { AppRequest, JwtPayload } from "../types/common";
+import { JwtPayload } from "../types/common";
 import { STATUS_CODES } from "../constants/status-codes.";
 import env from "../configs/env";
 import { TokenBlacklistService } from "../services/tokenBlacklist.service";
 
-const authMiddleware = async (req: AppRequest, res: Response, next: NextFunction) => {
+const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
         let token: string | undefined;
 

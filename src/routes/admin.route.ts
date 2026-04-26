@@ -6,6 +6,7 @@ import { RoleAdmin } from "../models/accountAdmin";
 import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
 import { createDeckController, getAllDeckController, getDeckAdminDetailController, saveDeckController } from "../controllers/deckAdmin.controller";
+import { getActivityLogsController } from "../controllers/activityLog.controller";
 
 const adminRoute = router.Router();
 
@@ -327,5 +328,47 @@ adminRoute.post(
     roleMiddleware(RoleAdmin.ADMIN),
     saveDeckController
 );
+
+
+/**
+ * @swagger
+ * /api/v1/admin/logs:
+ *   get:
+ *     summary: Get activity logs
+ *     tags: [Services Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: action
+ *         schema:
+ *           type: string
+ *         required: false
+ * 
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: number
+ *           default: 1
+ *         required: false
+ *
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: number
+ *           default: 10
+ *         required: false
+ *
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+adminRoute.get(
+    "/get-logs",
+    authMiddleware,
+    roleMiddleware(RoleAdmin.ADMIN, RoleAdmin.NORMAL),
+    getActivityLogsController
+);
+
 
 export default adminRoute;

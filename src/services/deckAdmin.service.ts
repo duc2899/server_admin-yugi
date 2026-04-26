@@ -5,8 +5,10 @@ import { CreateDeckAdminPayload, getDeckAdminDetialPayload, SaveDeckAdminPayload
 import { generateLongId } from "../utils/generateId";
 import throwError from "../utils/throwError";
 import Card from "../models/card";
+import { createActivityLogService } from "./activityLog.service";
+import { JwtPayload, ReqInfor } from "../types/common";
 
-const createDeckAdminService = async (payload: CreateDeckAdminPayload) => {
+const createDeckAdminService = async (payload: CreateDeckAdminPayload, user: JwtPayload, reqInfo?: ReqInfor) => {
     try {
         const { name, type = "DEFAULT", mainDeckCards, sideDeckCards, extraDeckCards } = payload;
         const cleanDeck = await validateDeckCards({ mainDeckCards, sideDeckCards, extraDeckCards });
@@ -18,6 +20,21 @@ const createDeckAdminService = async (payload: CreateDeckAdminPayload) => {
         });
 
         await newDeckAdmin.save();
+
+        await createActivityLogService({
+            userId: user._id.toString(),
+            username: user.username,
+            action: "CREATE_DECK",
+            targetType: "DECK",
+            targetId: newDeckAdmin._id.toString(),
+            targetName: newDeckAdmin.name,
+            message: `${user.username} created deck ${newDeckAdmin.name}`,
+            ip: reqInfo?.ip,
+            userAgent: reqInfo?.userAgent,
+            metadata: {
+                deckType: type,
+            },
+        });
 
         return {
             ...newDeckAdmin.toObject(),
@@ -46,7 +63,7 @@ const getAllDeckAdminService = async () => {
     }
 };
 
-const saveDeckAdminService = async (payload: SaveDeckAdminPayload) => {
+const saveDeckAdminService = async (payload: SaveDeckAdminPayload, user: JwtPayload, reqInfo?: ReqInfor) => {
     try {
         const { id, name, type, mainDeckCards, sideDeckCards, extraDeckCards } = payload;
 
@@ -69,6 +86,22 @@ const saveDeckAdminService = async (payload: SaveDeckAdminPayload) => {
         deck.extraDeckCards = cleanDeck.extraDeckCards;
 
         await deck.save();
+
+        
+        await createActivityLogService({
+            userId: user._id.toString(),
+            username: user.username,
+            action: "UPDATE_DECK",
+            targetType: "DECK",
+            targetId: deck._id.toString(),
+            targetName: deck.name,
+            message: `${user.username} save deck ${deck.name}`,
+            ip: reqInfo?.ip,
+            userAgent: reqInfo?.userAgent,
+            metadata: {
+                deckType: type,
+            },
+        });
 
         return {
             ...deck.toObject(),
@@ -124,6 +157,7 @@ const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
                 };
             });
         };
+        
 
         return {
             ...deck,
@@ -137,8 +171,6 @@ const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
         throw error;
     }
 };
-
-
 
 export { createDeckAdminService, getAllDeckAdminService, getDeckAdminDetailService, saveDeckAdminService }
 

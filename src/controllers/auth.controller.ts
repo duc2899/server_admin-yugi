@@ -1,9 +1,8 @@
-import type { Response, NextFunction } from "express";
+import type { Response, NextFunction, Request } from "express";
 import jwt from "jsonwebtoken";
 
 import { loginService, registerService, getProfileService, logoutService } from "../services/auth.service";
 import { loginSchema, registerSchema } from "../schemas/authSchema";
-import { AppRequest } from "../types/common";
 import { EXPRIE_COOKIE } from "../constants/common";
 import { ApiResponse } from "../utils/api-response";
 import env from "../configs/env";
@@ -11,7 +10,7 @@ import { TokenBlacklistService } from "../services/tokenBlacklist.service";
 
 const isProduction = env.NODE_ENV === "production";
 
-const registerController = async (req: AppRequest, res: Response, next: NextFunction) => {
+const registerController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = registerSchema.parse(req.body);
         const user = await registerService(parsed);
@@ -21,7 +20,7 @@ const registerController = async (req: AppRequest, res: Response, next: NextFunc
     }
 };
 
-const loginController = async (req: AppRequest, res: Response, next: NextFunction) => {
+const loginController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = loginSchema.parse(req.body);
         const result = await loginService(parsed);
@@ -37,7 +36,7 @@ const loginController = async (req: AppRequest, res: Response, next: NextFunctio
     }
 };
 
-const getProfileController = async (req: AppRequest, res: Response, next: NextFunction) => {
+const getProfileController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const _id = req.user?._id;
         const user = await getProfileService({ _id });
@@ -47,7 +46,7 @@ const getProfileController = async (req: AppRequest, res: Response, next: NextFu
     }
 };
 
-const logoutController = async (req: AppRequest, res: Response, next: NextFunction) => {
+const logoutController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const _id = req.user?._id;
 

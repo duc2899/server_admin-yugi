@@ -1,12 +1,11 @@
-import type { Response, NextFunction } from 'express';
+import type { Response, NextFunction, Request } from 'express';
 
 import { getAllTournamentsService, getTournamentDetailService } from '../services/tournament.service';
 import { getTournamentSchema, getTournamentDetail } from '../schemas/tournamentSchema';
-import { AppRequest } from '../types/common';
 import { ApiResponse } from '../utils/api-response';
 
 
-const getAllTournamentController = async (req: AppRequest, res: Response, next: NextFunction) => {
+const getAllTournamentController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = getTournamentSchema.parse(req.query);
         const data = await getAllTournamentsService(parsed);
@@ -16,7 +15,7 @@ const getAllTournamentController = async (req: AppRequest, res: Response, next: 
     }
 };
 
-const getTournamentDetailController = async (req: AppRequest, res: Response, next: NextFunction) => {
+const getTournamentDetailController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = getTournamentDetail.parse(req.params);
         const data = await getTournamentDetailService(parsed);

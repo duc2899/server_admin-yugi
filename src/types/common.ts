@@ -1,4 +1,3 @@
-import { Request } from "express";
 import { RoleAdmin } from "../models/accountAdmin";
 export interface PaginationOptions {
     page: number;
@@ -10,6 +9,7 @@ export interface JwtPayload {
     role: RoleAdmin;
 }
 
-export interface AppRequest extends Request{
-    user?: JwtPayload
+export interface ReqInfor {
+    ip?: string;
+    userAgent?: string;
 }

@@ -49,7 +49,7 @@ export const loginService = async ({ username, password }: requestLogin) => {
             return throwError("Invalid username or password", STATUS_CODES.UNAUTHORIZED);
         }
 
-        const token = jwt.sign({ _id: user._id, role: user.role }, env.JWT_ACCESS_SECRET, { expiresIn: EXPRIE_TOKEN });
+        const token = jwt.sign({ _id: user._id, role: user.role, username: user.username}, env.JWT_ACCESS_SECRET, { expiresIn: EXPRIE_TOKEN });
 
         return {
             token,

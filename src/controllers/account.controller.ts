@@ -1,11 +1,10 @@
-import type { Response, NextFunction } from "express";
+import type { Response, NextFunction, Request } from "express";
 
 import { getAllAccounts } from "../services/account.service";
-import { AppRequest } from "../types/common";
 import { getAccountsSchema } from "../schemas/accountSchema";
 import { ApiResponse } from "../utils/api-response";
 
-const fetchAllAccounts = async (req: AppRequest, res: Response, next: NextFunction) => {
+const fetchAllAccounts = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = getAccountsSchema.parse(req.query);
         const data = await getAllAccounts(parsed);

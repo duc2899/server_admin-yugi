@@ -6,13 +6,31 @@ import throwError from "../utils/throwError";
 import { STATUS_CODES } from '../constants/status-codes.';
 import { GetAccountsOptions } from '../types/account';
 import { VERSIONS } from '../constants/version.constant';
+import { createActivityLogService } from './activityLog.service';
+import { JwtPayload, ReqInfor } from '../types/common';
 
-const changeRoleService = async ({ role, _id }: requestChangeRole) => {
+const changeRoleService = async ({ role, _id }: requestChangeRole, user: JwtPayload, reqInfo?: ReqInfor) => {
     try {
-        const user = await AccountAdmin.findOneAndUpdate({ _id: _id }, { role: role }, { new: true, runValidators: true })
-        if (!user) {
+        const userDB = await AccountAdmin.findOneAndUpdate({ _id: _id }, { role: role }, { new: true, runValidators: true })
+        if (!userDB) {
             return throwError("User not found", STATUS_CODES.NOT_FOUND);
         }
+
+        await createActivityLogService({
+            userId: user._id.toString(),
+            username: user.username,
+            action: "CHANGE_ROLE",
+            targetType: "SYSTEM",
+            targetId: userDB._id.toString(),
+            targetName: userDB.username,
+            message: `${user.username} change role ${userDB.username} by role ${role}`,
+            ip: reqInfo?.ip,
+            userAgent: reqInfo?.userAgent,
+            metadata: {
+                roleType: role,
+            },
+        });
+
         return {
             _id: user._id,
             role: user.role
@@ -75,7 +93,7 @@ const getVersionClientService = async () => {
     }
 }
 
-const setVersionClientService = async ({ version, type }: requestSetVersionClient) => {
+const setVersionClientService = async ({ version, type }: requestSetVersionClient, user: JwtPayload, reqInfo?: ReqInfor) => {
     try {
         const config = await Config.findOneAndUpdate(
             { _id: type },
@@ -86,6 +104,22 @@ const setVersionClientService = async ({ version, type }: requestSetVersionClien
         if (!config) {
             return throwError("Not found config", STATUS_CODES.NOT_FOUND);
         }
+
+        await createActivityLogService({
+            userId: user._id.toString(),
+            username: user.username,
+            action: "SET_VERSION",
+            targetType: "SYSTEM",
+            targetId: config._id.toString(),
+            targetName: version + ` (${config._id.toString()})`,
+            message: `${user.username} set version ${version}`,
+            ip: reqInfo?.ip,
+            userAgent: reqInfo?.userAgent,
+            metadata: {
+                versionType: config._id.toString(),
+                version
+            },
+        });
 
         return config;
     } catch (error: any) {
