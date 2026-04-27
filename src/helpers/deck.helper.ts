@@ -57,6 +57,10 @@ export const validateDeckCards = async ({
         if (cardInfo.cardLimitStatus === 0) {
             return throwError(`Card ${cardInfo.name} is Forbidden`, STATUS_CODES.BAD_REQUEST);
         }
+
+        if (cardInfo.activeStatus === 0) {
+            return throwError(`Card ${cardInfo.name} is block`, STATUS_CODES.BAD_REQUEST);
+        }
     }
 
     // check extra deck type
