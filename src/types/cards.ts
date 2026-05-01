@@ -20,7 +20,7 @@ export interface SearchCardOptions extends PaginationOptions {
 export interface requestCardSetStatus {
   code: string;
   cardLimitStatus: CARD_LIMIT_STATUS;
-  activeStatus: CARD_ACTIVATE_STATUS
+  activeStatus: CARD_ACTIVATE_STATUS;
 }
 
 export const TYPE_CARDS = {
@@ -73,12 +73,7 @@ export const SPELL_TYPES = [
   "RITUAL",
 ] as const;
 
-export const TRAP_TYPES = [
-  "NORMAL",
-  "CONTINUOUS",
-  "COUNTER",
-] as const;
-
+export const TRAP_TYPES = ["NORMAL", "CONTINUOUS", "COUNTER"] as const;
 
 export const MONSTER_CATEGORIES = [
   "NORMAL",
@@ -101,3 +96,8 @@ export const MONSTER_CATEGORIES = [
 export type CARD_LIMIT_STATUS = 0 | 1 | 2 | 3; // 0: Ban, 1: Limited, 2: Semi-Private, 3: Default
 
 export type CARD_ACTIVATE_STATUS = 0 | 1; //0: Off, 1: On
+
+export interface SyncCardStatusFromSheetPayload {
+  sheetUrl: string;
+  gid: string;
+}

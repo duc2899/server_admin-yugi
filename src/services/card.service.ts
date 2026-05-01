@@ -1,7 +1,14 @@
-import { requestCardSetStatus, SearchCardOptions, TYPE_CARDS } from "../types/cards";
+import {
+  requestCardSetStatus,
+  SearchCardOptions,
+  SyncCardStatusFromSheetPayload,
+  TYPE_CARDS,
+} from "../types/cards";
 import { PaginationOptions } from "../types/common";
 import Card from "../models/card";
 import throwError from "../utils/throwError";
+import { STATUS_CODES } from "../constants/status-codes.";
+import axios from "axios";
 
 const getAllCards = async ({ page = 1, limit = 10 }: PaginationOptions) => {
   const skip = (page - 1) * limit;
@@ -65,7 +72,6 @@ const searchCards = async (options: SearchCardOptions) => {
       query.monsterAttribute = { $in: monsterAttribute };
     }
 
-
     // 🎯 LEVEL FILTER
     if (gte !== undefined || lte !== undefined) {
       query.level = {
@@ -87,7 +93,6 @@ const searchCards = async (options: SearchCardOptions) => {
     if (monsterCategory?.length) {
       query.monsterCategories = { $in: monsterCategory };
     }
-
   }
 
   // ✨ Spell filter
@@ -106,6 +111,7 @@ const searchCards = async (options: SearchCardOptions) => {
   }
 
   const sortOption: any = {};
+  sortOption.activeStatus = -1;
   sortOption[sortBy] = sortOrder === "asc" ? 1 : -1;
 
   const [data, total] = await Promise.all([
@@ -124,11 +130,15 @@ const searchCards = async (options: SearchCardOptions) => {
   };
 };
 
-const setStatusCardService = async ({ code, cardLimitStatus, activeStatus }: requestCardSetStatus) => {
+const setStatusCardService = async ({
+  code,
+  cardLimitStatus,
+  activeStatus,
+}: requestCardSetStatus) => {
   const card = await Card.findOneAndUpdate(
     { code },
     { cardLimitStatus, activeStatus },
-    { new: true }
+    { new: true },
   );
 
   if (!card) {
@@ -137,4 +147,74 @@ const setStatusCardService = async ({ code, cardLimitStatus, activeStatus }: req
 
   return card;
 };
-export { getAllCards, searchCards, setStatusCardService };
+
+const syncCardStatusFromSheetService = async ({
+  sheetUrl,
+  gid,
+}: SyncCardStatusFromSheetPayload) => {
+  try {
+    if (!sheetUrl || !gid) {
+      return throwError("Missing sheetUrl or gid", STATUS_CODES.BAD_REQUEST);
+    }
+
+    const match = sheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (!match) {
+      return throwError("Invalid Google Sheet URL", STATUS_CODES.BAD_REQUEST);
+    }
+
+    const sheetId = match[1];
+    const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+
+    // Fetch CSV của đúng tab
+    const response = await axios.get(csvUrl);
+    const rows = response.data
+      .split("\n")
+      .map((row: string) => row.split(",").map((cell: string) => cell.trim()));
+
+    const [_header, ...dataRows] = rows;
+
+    const results = {
+      updated: [] as string[],
+      notFound: [] as string[],
+      errors: [] as string[],
+    };
+
+    for (const [name, code, status] of dataRows) {
+      if (!code || status === undefined) continue;
+
+      const activeStatus = parseInt(status);
+      if (isNaN(activeStatus)) {
+        results.errors.push(`${code}: invalid status "${status}"`);
+        continue;
+      }
+
+      const result = await Card.updateOne({ code }, { $set: { activeStatus } });
+
+      if (result.matchedCount === 0) {
+        results.notFound.push(code);
+      } else {
+        results.updated.push(code);
+      }
+    }
+
+    return {
+      gid,
+      summary: {
+        total: dataRows.length,
+        updated: results.updated.length,
+        notFound: results.notFound.length,
+        errors: results.errors.length,
+      },
+      details: results,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {
+  getAllCards,
+  searchCards,
+  setStatusCardService,
+  syncCardStatusFromSheetService,
+};

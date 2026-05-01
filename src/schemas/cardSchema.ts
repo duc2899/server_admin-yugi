@@ -71,3 +71,8 @@ export const setCardStatusSchema = z.object({
   ),
 });
 
+export const syncCardStatusFromSheetSchema = z.object({
+  sheetUrl: z.string().url(),
+  gid: z.string(),
+});
+

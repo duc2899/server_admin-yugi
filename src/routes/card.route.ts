@@ -3,6 +3,7 @@ import {
   getAllCardsController,
   searchCardsController,
   setCardStatusController,
+  syncCardStatusFromSheetController,
 } from "../controllers/card.controller";
 import authMiddleware from "../middlewares/auth.middleware";
 import { cacheMiddleware } from "../middlewares/cache.middleware";
@@ -224,6 +225,41 @@ cardRoute.post(
   authMiddleware,
   clearCacheAfterSuccess("cards"),
   setCardStatusController
+);
+
+/**
+ * @swagger
+ * /api/v1/cards/sync-status:
+ *   post:
+ *     summary: Sync card status from a Google Sheet
+ *     tags: [Cards]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - sheetUrl
+ *               - gid
+ *             properties:
+ *               sheetUrl:
+ *                 type: string
+ *                 example: https://docs.google.com/spreadsheets/d/...
+ *               gid:
+ *                 type: string
+ *                 example: Sheet1
+ *     responses:
+ *       200:
+ *         description: Change status successfully
+ */
+cardRoute.post(
+  "/sync-status",
+  authMiddleware,
+  clearCacheAfterSuccess("cards"),
+  syncCardStatusFromSheetController
 );
 
 

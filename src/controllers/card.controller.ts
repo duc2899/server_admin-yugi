@@ -1,8 +1,8 @@
 import type { Response, NextFunction, Request } from "express";
 
-import { getAllCards, searchCards, setStatusCardService } from "../services/card.service";
+import { getAllCards, searchCards, setStatusCardService, syncCardStatusFromSheetService } from "../services/card.service";
 import { paginationSchema } from "../schemas/paginationSchema";
-import { searchCardSchema, setCardStatusSchema } from "../schemas/cardSchema";
+import { searchCardSchema, setCardStatusSchema, syncCardStatusFromSheetSchema } from "../schemas/cardSchema";
 import { ApiResponse } from "../utils/api-response";
 
 const getAllCardsController = async (req: Request, res: Response, next: NextFunction) => {
@@ -35,4 +35,14 @@ const setCardStatusController = async (req: Request, res: Response, next: NextFu
     }
 }
 
-export { getAllCardsController, searchCardsController, setCardStatusController };
+const syncCardStatusFromSheetController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const parsed = syncCardStatusFromSheetSchema.parse(req.body);
+        const data = await syncCardStatusFromSheetService(parsed);
+        return ApiResponse.ok(res, "Sync completed", data)
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { getAllCardsController, searchCardsController, setCardStatusController, syncCardStatusFromSheetController };
