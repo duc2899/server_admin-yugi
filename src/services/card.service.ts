@@ -1,4 +1,5 @@
 import {
+  CARD_ACTIVATE_STATUS,
   requestCardSetStatus,
   SearchCardOptions,
   SyncCardStatusFromSheetPayload,
@@ -8,7 +9,7 @@ import { PaginationOptions } from "../types/common";
 import Card from "../models/card";
 import throwError from "../utils/throwError";
 import { STATUS_CODES } from "../constants/status-codes.";
-import axios from "axios";
+import { getGoogleSheetsClient } from "../helpers/googleSheet.helpers";
 
 const getAllCards = async ({ page = 1, limit = 10 }: PaginationOptions) => {
   const skip = (page - 1) * limit;
@@ -153,7 +154,7 @@ const syncCardStatusFromSheetService = async ({
   gid,
 }: SyncCardStatusFromSheetPayload) => {
   try {
-    if (!sheetUrl || !gid) {
+    if (!sheetUrl || gid === undefined) {
       return throwError("Missing sheetUrl or gid", STATUS_CODES.BAD_REQUEST);
     }
 
@@ -163,51 +164,85 @@ const syncCardStatusFromSheetService = async ({
     }
 
     const sheetId = match[1];
-    const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+    const sheets = getGoogleSheetsClient();
 
-    // Fetch CSV của đúng tab
-    const response = await axios.get(csvUrl);
-    const rows = response.data
-      .split("\n")
-      .map((row: string) => row.split(",").map((cell: string) => cell.trim()));
+    // Lấy tên tab từ gid
+    const metaRes = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
+    const sheetMeta = metaRes.data.sheets?.find(
+      (s) => s.properties?.sheetId === Number(gid),
+    );
 
+    if (!sheetMeta) {
+      return throwError(
+        `Not found gid with value "${gid}"`,
+        STATUS_CODES.NOT_FOUND,
+      );
+    }
+
+    const tabName = sheetMeta.properties?.title!;
+
+    // Đọc data từ đúng tab
+    const dataRes = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range: `${tabName}!A:C`,
+    });
+
+    const rows = dataRes.data.values ?? [];
     const [_header, ...dataRows] = rows;
 
     const results = {
       updated: [] as string[],
+      skipped: [] as string[],
       notFound: [] as string[],
       errors: [] as string[],
     };
 
-    for (const [name, code, status] of dataRows) {
+    for (let i = 0; i < dataRows.length; i++) {
+      const [name, code, status] = dataRows[i];
       if (!code || status === undefined) continue;
 
-      const activeStatus = parseInt(status);
-      if (isNaN(activeStatus)) {
-        results.errors.push(`${code}: invalid status "${status}"`);
+      const activeStatus = parseInt(status) as CARD_ACTIVATE_STATUS;
+
+      if (isNaN(activeStatus) || ![0, 1].includes(activeStatus)) {
+        results.errors.push(
+          `${code}: invalid status "${status}" (chỉ chấp nhận 0 hoặc 1)`,
+        );
         continue;
       }
 
-      const result = await Card.updateOne({ code }, { $set: { activeStatus } });
+      // Tìm card và so sánh trước
+      const card = await Card.findOne({ code }).lean();
 
-      if (result.matchedCount === 0) {
+      if (!card) {
         results.notFound.push(code);
-      } else {
-        results.updated.push(code);
+        continue;
       }
+
+      // Giống nhau thì bỏ qua
+      if (card.activeStatus === activeStatus) {
+        results.skipped.push(code);
+        continue;
+      }
+
+      // Khác nhau thì mới update
+      await Card.updateOne({ code }, { $set: { activeStatus } });
+      results.updated.push(code);
     }
 
     return {
+      message: "Sync completed",
+      tab: tabName,
       gid,
       summary: {
         total: dataRows.length,
         updated: results.updated.length,
+        skipped: results.skipped.length,
         notFound: results.notFound.length,
         errors: results.errors.length,
       },
       details: results,
     };
-  } catch (error) {
+  } catch (error: any) {
     throw error;
   }
 };
