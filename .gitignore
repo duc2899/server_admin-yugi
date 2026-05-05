@@ -86,3 +86,5 @@ scripts/
 
 # Export Data
 export/
+keys/
+keys/private.pem

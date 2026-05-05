@@ -1,5 +1,5 @@
 import z from "zod";
-import { RoleAdmin } from "../models/accountAdmin";
+import { RoleAccount } from "../models/accountAdmin";
 import { VERSIONS } from "../constants/version.constant";
 
 export const versionSchema = z
@@ -8,7 +8,7 @@ export const versionSchema = z
 
 export const changeRoleSchema = z.object({
     _id: z.string(),
-    role: z.enum(RoleAdmin, "Invalid Role")
+    role: z.enum(RoleAccount, "Invalid Role")
 })
 
 export const setVersionClientSchema = z.object({

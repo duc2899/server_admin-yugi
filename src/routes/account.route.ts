@@ -2,7 +2,7 @@ import router from "express";
 import authMiddleware from "../middlewares/auth.middleware";
 import { fetchAllAccounts } from "../controllers/account.controller";
 import roleMiddleware from "../middlewares/roleMiddleware";
-import { RoleAdmin } from "../models/accountAdmin";
+import { RoleAccount } from "../models/accountAdmin";
 import { cacheMiddleware } from "../middlewares/cache.middleware";
 
 const accountRoute = router.Router();
@@ -46,7 +46,7 @@ const accountRoute = router.Router();
 accountRoute.get(
     "/",
     authMiddleware,
-    roleMiddleware(RoleAdmin.ADMIN, RoleAdmin.NORMAL),
+    roleMiddleware(RoleAccount.ADMIN, RoleAccount.NORMAL),
     cacheMiddleware({
         ttl: 5,
         prefix: "accounts-list",

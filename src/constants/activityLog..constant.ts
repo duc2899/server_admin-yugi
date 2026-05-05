@@ -7,7 +7,8 @@ export const LOG_ACTIONS = [
     "BAN_USER",
     "UNBAN_USER",
     "CHANGE_ROLE",
-    "SET_VERSION"
+    "SET_VERSION",
+    "SYNC_CARD_STATUS",
 ] as const;
 
 export type LogAction = (typeof LOG_ACTIONS)[number];

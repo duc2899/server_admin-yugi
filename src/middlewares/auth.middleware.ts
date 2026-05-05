@@ -1,11 +1,9 @@
 import type { Response, NextFunction, Request } from "express";
-import jwt from "jsonwebtoken";
 
 import throwError from "../utils/throwError";
-import { JwtPayload } from "../types/common";
 import { STATUS_CODES } from "../constants/status-codes.";
-import env from "../configs/env";
 import { TokenBlacklistService } from "../services/tokenBlacklist.service";
+import { verifyToken } from "../services/auth.service";
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -33,12 +31,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
             return throwError("Unauthorized", STATUS_CODES.UNAUTHORIZED);
         }
 
-        const decoded = jwt.verify(
-            token,
-            env.JWT_ACCESS_SECRET as string
-        ) as JwtPayload;
-
-        req.user = decoded;
+        req.user = verifyToken(token);
         next();
     } catch (error) {
         next(throwError("Invalid or expired token", STATUS_CODES.UNAUTHORIZED));

@@ -1,4 +1,4 @@
-import { RoleAdmin } from "../models/accountAdmin";
+import { RoleAccount } from "../models/accountAdmin";
 export interface PaginationOptions {
     page: number;
     limit: number;
@@ -6,7 +6,9 @@ export interface PaginationOptions {
 export interface JwtPayload {
     _id: string;
     username: string;
-    role: RoleAdmin;
+    role: RoleAccount;
+    iat?: number
+    exp?: number
 }
 
 export interface ReqInfor {

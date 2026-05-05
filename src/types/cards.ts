@@ -100,4 +100,5 @@ export type CARD_ACTIVATE_STATUS = 0 | 1; //0: Off, 1: On
 export interface SyncCardStatusFromSheetPayload {
   sheetUrl: string;
   gid: string;
+  type: "ACTIVATE_STATUS" | "LIMIT_STATUS";
 }

@@ -38,7 +38,10 @@ const setCardStatusController = async (req: Request, res: Response, next: NextFu
 const syncCardStatusFromSheetController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = syncCardStatusFromSheetSchema.parse(req.body);
-        const data = await syncCardStatusFromSheetService(parsed);
+        const data = await syncCardStatusFromSheetService(parsed, req.user, {
+            ip: req.ip,
+            userAgent: req.headers["user-agent"] || "",
+        });
         return ApiResponse.ok(res, "Sync completed", data)
     } catch (error) {
         next(error);

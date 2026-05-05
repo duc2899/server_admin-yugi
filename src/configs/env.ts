@@ -1,6 +1,5 @@
 import "dotenv-flow/config";
 import { z } from "zod";
-
 /**
  * Environment variable schema
  * - All validation happens at startup
@@ -21,7 +20,8 @@ export const envSchema = z.object({
     .enum(["fatal", "error", "warn", "info", "debug", "trace"])
     .default("info"),
 
-  JWT_ACCESS_SECRET: z.string().min(32),
+  PRIVATE_KEY: z.string(),
+  PUBLIC_KEY: z.string(),
   REDIS_USERNAME: z.string(),
   REDIS_PASSWORD: z.string(),
   REDIS_HOST: z.string(),

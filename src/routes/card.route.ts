@@ -8,6 +8,8 @@ import {
 import authMiddleware from "../middlewares/auth.middleware";
 import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
+import roleMiddleware from "../middlewares/roleMiddleware";
+import { RoleAccount } from "../models/accountAdmin";
 
 const cardRoute = router.Router();
 
@@ -223,6 +225,7 @@ cardRoute.get(
 cardRoute.post(
   "/set-status",
   authMiddleware,
+  roleMiddleware(RoleAccount.ADMIN),
   clearCacheAfterSuccess("cards"),
   setCardStatusController
 );
@@ -244,6 +247,7 @@ cardRoute.post(
  *             required:
  *               - sheetUrl
  *               - gid
+ *               - type
  *             properties:
  *               sheetUrl:
  *                 type: string
@@ -251,6 +255,9 @@ cardRoute.post(
  *               gid:
  *                 type: string
  *                 example: Sheet1
+ *               type:
+ *                 type: string
+ *                 example: ACTIVATE_STATUS
  *     responses:
  *       200:
  *         description: Change status successfully
@@ -258,6 +265,7 @@ cardRoute.post(
 cardRoute.post(
   "/sync-status",
   authMiddleware,
+  roleMiddleware(RoleAccount.ADMIN),
   clearCacheAfterSuccess("cards"),
   syncCardStatusFromSheetController
 );

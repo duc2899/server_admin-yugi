@@ -1,15 +1,15 @@
 import {
-  CARD_ACTIVATE_STATUS,
   requestCardSetStatus,
   SearchCardOptions,
   SyncCardStatusFromSheetPayload,
   TYPE_CARDS,
 } from "../types/cards";
-import { PaginationOptions } from "../types/common";
+import { JwtPayload, PaginationOptions, ReqInfor } from "../types/common";
 import Card from "../models/card";
 import throwError from "../utils/throwError";
 import { STATUS_CODES } from "../constants/status-codes.";
 import { getGoogleSheetsClient } from "../helpers/googleSheet.helpers";
+import { createActivityLogService } from "./activityLog.service";
 
 const getAllCards = async ({ page = 1, limit = 10 }: PaginationOptions) => {
   const skip = (page - 1) * limit;
@@ -152,7 +152,8 @@ const setStatusCardService = async ({
 const syncCardStatusFromSheetService = async ({
   sheetUrl,
   gid,
-}: SyncCardStatusFromSheetPayload) => {
+  type,
+}: SyncCardStatusFromSheetPayload, user: JwtPayload, reqInfo?: ReqInfor) => {
   try {
     if (!sheetUrl || gid === undefined) {
       return throwError("Missing sheetUrl or gid", STATUS_CODES.BAD_REQUEST);
@@ -166,7 +167,6 @@ const syncCardStatusFromSheetService = async ({
     const sheetId = match[1];
     const sheets = getGoogleSheetsClient();
 
-    // Lấy tên tab từ gid
     const metaRes = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
     const sheetMeta = metaRes.data.sheets?.find(
       (s) => s.properties?.sheetId === Number(gid),
@@ -181,10 +181,9 @@ const syncCardStatusFromSheetService = async ({
 
     const tabName = sheetMeta.properties?.title!;
 
-    // Đọc data từ đúng tab
     const dataRes = await sheets.spreadsheets.values.get({
       spreadsheetId: sheetId,
-      range: `${tabName}!A:C`,
+      range: `${tabName}!A:D`,
     });
 
     const rows = dataRes.data.values ?? [];
@@ -197,42 +196,65 @@ const syncCardStatusFromSheetService = async ({
       errors: [] as string[],
     };
 
+    const isActivateType = type === "ACTIVATE_STATUS";
+    const validValues = isActivateType ? [0, 1] : [0, 1, 2, 3];
+    const updateField = isActivateType ? "activeStatus" : "cardLimitStatus";
+
     for (let i = 0; i < dataRows.length; i++) {
-      const [name, code, status] = dataRows[i];
-      if (!code || status === undefined) continue;
+      const [name, code, status, banish] = dataRows[i];
+      const rawValue = isActivateType ? status : banish;
+      if (!code || rawValue === undefined) continue;
 
-      const activeStatus = parseInt(status) as CARD_ACTIVATE_STATUS;
+      const parsedStatus = parseInt(rawValue);
 
-      if (isNaN(activeStatus) || ![0, 1].includes(activeStatus)) {
+      if (isNaN(parsedStatus) || !validValues.includes(parsedStatus)) {
         results.errors.push(
-          `${code}: invalid status "${status}" (chỉ chấp nhận 0 hoặc 1)`,
+          `${code}: invalid status "${rawValue}" (chỉ chấp nhận ${validValues.join(", ")})`,
         );
         continue;
       }
 
-      // Tìm card và so sánh trước
-      const card = await Card.findOne({ code }).lean();
+      const card = await Card.findOne({ code })
+        .select("activeStatus cardLimitStatus code")
+        .lean();
 
       if (!card) {
         results.notFound.push(code);
         continue;
       }
 
-      // Giống nhau thì bỏ qua
-      if (card.activeStatus === activeStatus) {
+      // So sánh đúng field theo type
+      if (card[updateField] === parsedStatus) {
         results.skipped.push(code);
         continue;
       }
 
-      // Khác nhau thì mới update
-      await Card.updateOne({ code }, { $set: { activeStatus } });
+      await Card.updateOne({ code }, { $set: { [updateField]: parsedStatus } });
       results.updated.push(code);
     }
 
+    await createActivityLogService({
+      userId: user._id.toString(),
+      username: user.username,
+      action: "SYNC_CARD_STATUS",
+      targetType: "CARD",
+      targetId: sheetUrl,
+      targetName: tabName,
+      message: `${user.username} synced card status from sheet ${sheetUrl} (updated: ${results.updated.length}, skipped: ${results.skipped.length}, not found: ${results.notFound.length}, errors: ${results.errors.length})`,
+      ip: reqInfo?.ip,
+      userAgent: reqInfo?.userAgent,
+      metadata: {
+        sheetUrl,
+        gid,
+        type,
+        results,
+      }
+    });
+
     return {
-      message: "Sync completed",
       tab: tabName,
       gid,
+      type,
       summary: {
         total: dataRows.length,
         updated: results.updated.length,
