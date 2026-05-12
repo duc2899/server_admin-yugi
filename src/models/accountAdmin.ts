@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 
-export enum RoleAdmin {
+export enum RoleAccount {
     NORMAL = "normal",
     ADMIN = "admin"
 }
@@ -11,7 +11,7 @@ export interface IAccountAdmin {
     username: string;
     fullName: string;
     password: string;
-    role: RoleAdmin;
+    role: RoleAccount;
     isDisabled: boolean;
     createdTime: Date;
     updatedTime: Date;
@@ -25,7 +25,7 @@ const AccountAdminSchema: Schema = new Schema<IAccountAdmin>(
         username: { type: String, required: true },
         password: { type: String, required: true },
         isDisabled: {type: Boolean, default: false},
-        role: { type: String, required: true, default: RoleAdmin.NORMAL },
+        role: { type: String, required: true, default: RoleAccount.NORMAL },
         createdTime: { type: Date, required: true, default: Date.now },
         updatedTime: { type: Date, required: true, default: Date.now },
         lastedLogin: { type: Date, default: null }

@@ -4,9 +4,9 @@
   "description": "",
   "main": "./src/server.ts",
   "scripts": {
-    "dev": "npx nodemon",
-    "build": "tsc && copy .env dist\\.env",
-    "start": "node dist/server.js"
+    "dev": "cross-env NODE_ENV=development npx nodemon",
+    "build": "tsc && copy .env dist\\.env && copy .env.production dist\\.env.production",
+    "start": "cross-env NODE_ENV=production node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,7 @@
     "@sapphire/snowflake": "^3.5.5",
     "@types/body-parser": "^1.19.6",
     "argon2": "^0.44.0",
+    "axios": "^1.15.2",
     "body-parser": "^2.2.2",
     "compression": "^1.8.1",
     "config": "^4.2.0",
@@ -24,6 +25,7 @@
     "exceljs": "^4.4.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
+    "googleapis": "^171.4.0",
     "helmet": "^8.1.0",
     "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.3",
@@ -33,6 +35,8 @@
     "nanoid": "^5.1.6",
     "nodemon": "^3.1.11",
     "redis": "^5.11.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.19.0",
@@ -52,6 +56,7 @@
     "@types/node": "^25.2.2",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "cross-env": "^10.1.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   }

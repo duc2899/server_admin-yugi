@@ -1,13 +1,14 @@
 import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken"
 
-import AccountAdmin from "../models/accountAdmin";
+import AccountAdmin, { RoleAccount } from "../models/accountAdmin";
 import { requestLogin, requestRegister, requestProfile } from "../types/auth";
 import throwError from "../utils/throwError";
 import { EXPRIE_TOKEN } from "../constants/common";
 import { STATUS_CODES } from "../constants/status-codes.";
-import env from "../configs/env";
 import { hashPassword, verifyPassword } from "../helpers/auth.helpers";
+import { privateKey, publicKey } from "../configs/key";
+import { JwtPayload } from "../types/common";
 
 export const registerService = async ({ username, password, fullName }: requestRegister) => {
     try {
@@ -49,7 +50,7 @@ export const loginService = async ({ username, password }: requestLogin) => {
             return throwError("Invalid username or password", STATUS_CODES.UNAUTHORIZED);
         }
 
-        const token = jwt.sign({ _id: user._id, role: user.role, username: user.username}, env.JWT_ACCESS_SECRET, { expiresIn: EXPRIE_TOKEN });
+        const token = signToken(user._id, user.role, user.username);
 
         return {
             token,
@@ -92,7 +93,6 @@ export const getProfileService = async ({ _id }: requestProfile) => {
     }
 }
 
-
 export const logoutService = async ({ _id }: requestProfile) => {
     try {
         if (!_id) {
@@ -109,4 +109,18 @@ export const logoutService = async ({ _id }: requestProfile) => {
     } catch (error: any) {
         throw error;
     }
+}
+
+export function signToken(userId: string, role: RoleAccount, username: string): string {
+    return jwt.sign(
+        { _id: userId, role, username } satisfies Omit<JwtPayload, 'iat' | 'exp'>,
+        privateKey,
+        { algorithm: 'ES256', expiresIn: EXPRIE_TOKEN }
+    )
+}
+
+export function verifyToken(token: string): JwtPayload {
+    return jwt.verify(token, publicKey, {
+        algorithms: ['ES256'],
+    }) as JwtPayload
 }
