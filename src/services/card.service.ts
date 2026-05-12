@@ -10,6 +10,7 @@ import throwError from "../utils/throwError";
 import { STATUS_CODES } from "../constants/status-codes.";
 import { getGoogleSheetsClient } from "../helpers/googleSheet.helpers";
 import { createActivityLogService } from "./activityLog.service";
+import { emitRefreshConfig } from "../configs/socket";
 
 const getAllCards = async ({ page = 1, limit = 10 }: PaginationOptions) => {
   const skip = (page - 1) * limit;
@@ -145,6 +146,7 @@ const setStatusCardService = async ({
   if (!card) {
     return throwError("Card not found", 404);
   }
+  emitRefreshConfig();
 
   return card;
 };
@@ -204,6 +206,7 @@ const syncCardStatusFromSheetService = async ({
       const [name, code, status, banish] = dataRows[i];
       const rawValue = isActivateType ? status : banish;
       if (!code || rawValue === undefined) continue;
+      if(code === -1) continue; // Bỏ qua dòng có code = -1 (code = -1 là card không tồn tại)
 
       const parsedStatus = parseInt(rawValue);
 

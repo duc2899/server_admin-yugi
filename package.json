@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "./src/server.ts",
-"scripts": {
-  "dev": "cross-env NODE_ENV=development npx nodemon",
-  "build": "tsc && copy .env dist\\.env && copy .env.production dist\\.env.production",
-  "start": "cross-env NODE_ENV=production node dist/server.js"
-},
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development npx nodemon",
+    "build": "tsc && copy .env dist\\.env && copy .env.production dist\\.env.production",
+    "start": "cross-env NODE_ENV=production node dist/server.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -35,6 +35,8 @@
     "nanoid": "^5.1.6",
     "nodemon": "^3.1.11",
     "redis": "^5.11.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.19.0",
