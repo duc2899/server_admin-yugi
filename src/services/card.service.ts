@@ -146,7 +146,7 @@ const setStatusCardService = async ({
   if (!card) {
     return throwError("Card not found", 404);
   }
-  emitRefreshConfig();
+  // emitRefreshConfig();
 
   return card;
 };
@@ -202,11 +202,20 @@ const syncCardStatusFromSheetService = async ({
     const validValues = isActivateType ? [0, 1] : [0, 1, 2, 3];
     const updateField = isActivateType ? "activeStatus" : "cardLimitStatus";
 
+    // Ngoài for - chuẩn bị track row notFound
+    const notFoundRowIndexes: number[] = [];
+
     for (let i = 0; i < dataRows.length; i++) {
       const [name, code, status, banish] = dataRows[i];
       const rawValue = isActivateType ? status : banish;
       if (!code || rawValue === undefined) continue;
-      if(code === -1) continue; // Bỏ qua dòng có code = -1 (code = -1 là card không tồn tại)
+      if (code === -1) continue;
+
+      // Thêm vào đây
+      if (rawValue?.trim() === "-1") {
+        results.skipped.push(code);
+        continue;
+      }
 
       const parsedStatus = parseInt(rawValue);
 
@@ -223,10 +232,10 @@ const syncCardStatusFromSheetService = async ({
 
       if (!card) {
         results.notFound.push(code);
+        notFoundRowIndexes.push(i + 2); // +2 vì header + 1-indexed
         continue;
       }
 
-      // So sánh đúng field theo type
       if (card[updateField] === parsedStatus) {
         results.skipped.push(code);
         continue;
@@ -234,6 +243,20 @@ const syncCardStatusFromSheetService = async ({
 
       await Card.updateOne({ code }, { $set: { [updateField]: parsedStatus } });
       results.updated.push(code);
+    }
+
+    // Ghi -1 lên cột C (status) cho các row notFound
+    if (notFoundRowIndexes.length > 0) {
+      await sheets.spreadsheets.values.batchUpdate({
+        spreadsheetId: sheetId,
+        requestBody: {
+          valueInputOption: "RAW",
+          data: notFoundRowIndexes.map((rowIndex) => ({
+            range: `${tabName}!C${rowIndex}`, // cột C là status
+            values: [["-1"]],
+          })),
+        },
+      });
     }
 
     await createActivityLogService({
