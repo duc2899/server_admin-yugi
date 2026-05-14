@@ -1,7 +1,7 @@
 import { STATUS_CODES } from "../constants/status-codes.";
 import { validateDeckCards } from "../helpers/deck.helper";
 import DeckAdmin from "../models/deckAdmin";
-import { CreateDeckAdminPayload, getDeckAdminDetialPayload, SaveDeckAdminPayload } from "../types/deckAdmin";
+import { CreateDeckAdminPayload, DeleteDeckAdminPayload, getDeckAdminDetialPayload, SaveDeckAdminPayload } from "../types/deckAdmin";
 import { generateLongId } from "../utils/generateId";
 import throwError from "../utils/throwError";
 import Card from "../models/card";
@@ -87,7 +87,7 @@ const saveDeckAdminService = async (payload: SaveDeckAdminPayload, user: JwtPayl
 
         await deck.save();
 
-        
+
         await createActivityLogService({
             userId: user._id.toString(),
             username: user.username,
@@ -157,7 +157,7 @@ const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
                 };
             });
         };
-        
+
 
         return {
             ...deck,
@@ -172,5 +172,18 @@ const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
     }
 };
 
-export { createDeckAdminService, getAllDeckAdminService, getDeckAdminDetailService, saveDeckAdminService }
+const deleteDeckAdminService = async ({ id }: DeleteDeckAdminPayload) => {
+    try {
+        const deck = await DeckAdmin.findOne({ _id: id });
+        if (!deck) {
+            return throwError("Deck not found", STATUS_CODES.NOT_FOUND);
+        }
+        await DeckAdmin.deleteOne({ _id: id });
+        return;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export { createDeckAdminService, getAllDeckAdminService, getDeckAdminDetailService, saveDeckAdminService, deleteDeckAdminService };
 

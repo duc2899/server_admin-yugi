@@ -1,6 +1,6 @@
 import type { Response, NextFunction, Request } from "express";
-import { createDeckSchema, getDeckDetailSchema, saveDeckSchema } from "../schemas/deckAdmin.schema";
-import { createDeckAdminService, getAllDeckAdminService, getDeckAdminDetailService, saveDeckAdminService } from "../services/deckAdmin.service";
+import { createDeckSchema, deleteDeckSchema, getDeckDetailSchema, saveDeckSchema } from "../schemas/deckAdmin.schema";
+import { createDeckAdminService, deleteDeckAdminService, getAllDeckAdminService, getDeckAdminDetailService, saveDeckAdminService } from "../services/deckAdmin.service";
 import { ApiResponse } from "../utils/api-response";
 
 const createDeckController = async (req: Request, res: Response, next: NextFunction) => {
@@ -48,6 +48,14 @@ const saveDeckController = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
+const deleteDeckAdminController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const paresed = deleteDeckSchema.parse(req.body);
+        await deleteDeckAdminService(paresed);
+        return ApiResponse.ok(res, "Delete deck successfully", null);
+    } catch (error) {
+        next(error);
+    }
+}
 
-
-export { createDeckController, getAllDeckController, getDeckAdminDetailController, saveDeckController }
+export { createDeckController, getAllDeckController, getDeckAdminDetailController, saveDeckController, deleteDeckAdminController }

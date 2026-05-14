@@ -5,7 +5,7 @@ import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAccount } from "../models/accountAdmin";
 import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
-import { createDeckController, getAllDeckController, getDeckAdminDetailController, saveDeckController } from "../controllers/deckAdmin.controller";
+import { createDeckController, deleteDeckAdminController, getAllDeckController, getDeckAdminDetailController, saveDeckController } from "../controllers/deckAdmin.controller";
 import { getActivityLogsController } from "../controllers/activityLog.controller";
 
 const adminRoute = router.Router();
@@ -274,7 +274,40 @@ adminRoute.get(
 adminRoute.get(
     "/get-deck/:id",
     authMiddleware,
+    roleMiddleware(RoleAccount.ADMIN, RoleAccount.NORMAL),
     getDeckAdminDetailController
+);
+
+/**
+ * @swagger
+ * /api/v1/admin/delete-deck:
+ *   post:
+ *     summary: Delete deck
+ *     tags: [Services Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 example: 7451186054687625216
+ *         description: Deck ID
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+adminRoute.post(
+    "/delete-deck",
+    authMiddleware,
+    roleMiddleware(RoleAccount.ADMIN),
+    deleteDeckAdminController
 );
 
 

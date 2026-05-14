@@ -20,3 +20,7 @@ export interface SaveDeckAdminPayload {
 export interface getDeckAdminDetialPayload {
     id: String
 }
+
+export interface DeleteDeckAdminPayload {
+    id: String
+}
