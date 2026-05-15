@@ -54,9 +54,12 @@ const searchCards = async (options: SearchCardOptions) => {
   const skip = (page - 1) * limit;
   const query: any = {};
 
-  // 🔍 Search name
+  // 🔍 Search name hoặc code
   if (name) {
-    query.name = { $regex: name, $options: "i" };
+    query.$or = [
+      { name: { $regex: name, $options: "i" } },
+      { code: { $regex: name, $options: "i" } },
+    ]
   }
 
   // 🎴 Filter category
