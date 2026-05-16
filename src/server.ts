@@ -10,11 +10,19 @@ import swaggerSpec from "./swagger";
 import { configureGracefulShutdown } from "./utils/shutdown";
 import { logger } from "./utils/logger";
 import connectRedis from "./configs/redis";
-import { connectYugiSocket } from "./configs/socket";
+import { Server } from 'socket.io'
+import { initSocket } from "./configs/initSocket";
 
 
 const app = express();
 const server = http.createServer(app);
+
+export const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -34,6 +42,8 @@ app.use("/api/v1", initRouter);
 app.use(errorHandler);
 
 // connectYugiSocket();
+
+initSocket();
 
 server.listen(env.PORT, () => {
     logger.info("Server started");
