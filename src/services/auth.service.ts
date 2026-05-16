@@ -53,14 +53,13 @@ export const loginService = async ({ username, password }: requestLogin) => {
         }
 
         const existingSocketId = await RedisService.get(`socket:${user._id}`);
+
         if (existingSocketId) {
+
             // Thiết bị A đang online → emit cảnh báo rồi kick
             io.to(existingSocketId).emit('DEVICE_LOGIN_DETECTED', {
                 message: 'Tài khoản của bạn vừa được đăng nhập ở thiết bị khác'
             })
-
-            // Xóa session cũ
-            await RedisService.del(`socket:${user._id}`)
         }
 
         const token = signToken(user._id, user.role, user.username);

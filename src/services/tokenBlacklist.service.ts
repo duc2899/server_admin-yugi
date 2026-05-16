@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import redisClient from "../configs/redis";
+import { RedisService } from "./redis.service";
 
 export class TokenBlacklistService {
     static hashToken(token: string) {
@@ -10,14 +10,14 @@ export class TokenBlacklistService {
         const hash = this.hashToken(token);
         const key = `bl:${hash}`;
 
-        await redisClient.setEx(key, ttlSeconds, "1");
+        await RedisService.set(key, "1", ttlSeconds);
     }
 
     static async isBlacklisted(token: string): Promise<boolean> {
         const hash = this.hashToken(token);
         const key = `bl:${hash}`;
 
-        const value = await redisClient.get(key);
+        const value = await RedisService.get(key);
         return value === "1";
     }
 }
