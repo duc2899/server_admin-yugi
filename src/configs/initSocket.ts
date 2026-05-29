@@ -10,7 +10,12 @@ export function initSocket() {
         await RedisService.set(`socket:${userId}`, socket.id, 60 * 60 * 24) // 24h
 
         socket.on('disconnect', async () => {
-            await RedisService.del(`socket:${userId}`)
+            // Chỉ xóa nếu key hiện tại vẫn là socket của mình
+            // Tránh xóa nhầm socket của thiết bị khác vừa login
+            const current = await RedisService.get(`socket:${userId}`)
+            if (current === socket.id) {
+                await RedisService.del(`socket:${userId}`)
+            }
         })
     })
 }
