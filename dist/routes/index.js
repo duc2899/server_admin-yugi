@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const account_route_1 = __importDefault(require("./account.route"));
+const card_route_1 = __importDefault(require("./card.route"));
+const tournament_route_1 = __importDefault(require("./tournament.route"));
+const auth_route_1 = __importDefault(require("./auth.route"));
+const admin_route_1 = __importDefault(require("./admin.route"));
+const health_route_1 = __importDefault(require("./health.route"));
+const initRoutes = express_1.default.Router();
+initRoutes.use("/accounts", account_route_1.default);
+initRoutes.use("/cards", card_route_1.default);
+initRoutes.use("/tournaments", tournament_route_1.default);
+initRoutes.use("/auth", auth_route_1.default);
+initRoutes.use("/admin", admin_route_1.default);
+initRoutes.use("/health", health_route_1.default);
+exports.default = initRoutes;

@@ -1,0 +1,94 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const tournament_controller_1 = require("../controllers/tournament.controller");
+const auth_middleware_1 = __importDefault(require("../middlewares/auth.middleware"));
+const cache_middleware_1 = require("../middlewares/cache.middleware");
+const tournamentRoute = express_1.default.Router();
+/**
+ * @swagger
+ * /api/v1/tournaments:
+ *   get:
+ *     summary: Get all tournaments
+ *     tags: [Tournaments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: number
+ *           default: 1
+ *         required: false
+ *         description: Page number
+ *
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: number
+ *           default: 10
+ *         required: false
+ *         description: Limit response
+ *
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Name of tournament
+ *
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Status of tournament
+ *
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Type of tournament
+ *
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+tournamentRoute.get("/", auth_middleware_1.default, (0, cache_middleware_1.cacheMiddleware)({
+    ttl: 5,
+    prefix: "tournaments-list",
+    tag: "tournaments",
+    skipAuth: true,
+}), tournament_controller_1.getAllTournamentController);
+/**
+ * @swagger
+ * /api/v1/tournaments/{id}:
+ *   get:
+ *     summary: Get tournament detail
+ *     tags: [Tournaments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Tournament ID
+ *     responses:
+ *       200:
+ *         description: Success
+ *       404:
+ *         description: Tournament not found
+ */
+tournamentRoute.get("/:id", auth_middleware_1.default, (0, cache_middleware_1.cacheMiddleware)({
+    ttl: 5,
+    prefix: "tournament-detail",
+    tag: "tournament-detail",
+    skipAuth: true,
+}), tournament_controller_1.getTournamentDetailController);
+exports.default = tournamentRoute;
