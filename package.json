@@ -5,7 +5,7 @@
   "main": "./src/server.ts",
   "scripts": {
     "dev": "cross-env NODE_ENV=development npx nodemon",
-    "build": "tsc && copy .env dist\\.env && copy .env.production dist\\.env.production",
+    "build": "tsc",
     "start": "cross-env NODE_ENV=production node dist/server.js"
   },
   "keywords": [],
