@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logoutService = exports.getProfileService = exports.loginService = exports.registerService = void 0;
+exports.changePasswordService = exports.uploadAvatarService = exports.logoutService = exports.getProfileService = exports.loginService = exports.registerService = void 0;
 exports.signToken = signToken;
 exports.verifyToken = verifyToken;
 const nanoid_1 = require("nanoid");
@@ -16,6 +16,7 @@ const auth_helpers_1 = require("../helpers/auth.helpers");
 const key_1 = require("../configs/key");
 const redis_service_1 = require("./redis.service");
 const server_1 = require("../server");
+const cloudinary_1 = __importDefault(require("../configs/cloudinary"));
 const registerService = async ({ username, password, fullName }) => {
     try {
         const exitsAccount = await accountAdmin_1.default.findOne({ username });
@@ -58,10 +59,9 @@ const loginService = async ({ username, password }) => {
             server_1.io.to(existingSocketId).emit('DEVICE_LOGIN_DETECTED', {
                 message: 'Tài khoản của bạn vừa được đăng nhập ở thiết bị khác'
             });
-            // Xóa session cũ
-            await redis_service_1.RedisService.del(`socket:${user._id}`);
         }
         const token = signToken(user._id, user.role, user.username);
+        await redis_service_1.RedisService.set(`user_session:${user._id}`, token);
         return {
             token,
             user: {
@@ -77,24 +77,16 @@ const loginService = async ({ username, password }) => {
     }
 };
 exports.loginService = loginService;
-const getProfileService = async ({ _id }) => {
+const getProfileService = async (user) => {
     try {
-        if (!_id) {
+        if (!user._id) {
             return (0, throwError_1.default)("Not found user", status_codes_1.STATUS_CODES.NOT_FOUND);
         }
-        const user = await accountAdmin_1.default.findOne({ _id }).select("-password");
-        if (!user) {
+        const userData = await accountAdmin_1.default.findOne({ _id: user._id }).select("-password").lean();
+        if (!userData) {
             return (0, throwError_1.default)("Not found user", status_codes_1.STATUS_CODES.NOT_FOUND);
         }
-        return {
-            _id: user._id,
-            username: user.username,
-            fullName: user.fullName,
-            role: user.role,
-            lastedLogin: user.lastedLogin,
-            createdTime: user.createdTime,
-            updatedTime: user.updatedTime,
-        };
+        return userData;
     }
     catch (error) {
         throw error;
@@ -125,3 +117,68 @@ function verifyToken(token) {
         algorithms: ['ES256'],
     });
 }
+const uploadAvatarService = async (user, file) => {
+    try {
+        if (!user._id) {
+            return (0, throwError_1.default)("Not found user", status_codes_1.STATUS_CODES.NOT_FOUND);
+        }
+        // 1. Tìm thông tin user hiện tại để xem đã có publicId của avatar cũ chưa
+        const existingUser = await accountAdmin_1.default.findById(user._id).select('publicIdAvatar');
+        // 2. Upload ảnh mới lên Cloudinary trước
+        const uploadResult = await uploadStreamToCloudinary(file);
+        const avatarUrl = uploadResult.secure_url;
+        const publicIdAvatar = uploadResult.public_id;
+        // 3. Cập nhật thông tin avatar mới vào DB
+        const updatedUser = await accountAdmin_1.default.findOneAndUpdate({ _id: user._id }, { avatar: avatarUrl, publicIdAvatar: publicIdAvatar }, { new: true }).select("-password");
+        // 4. Nếu trước đó user ĐÃ CÓ avatar cũ, tiến hành xóa file cũ trên Cloudinary
+        if (existingUser && existingUser.publicIdAvatar) {
+            // Sử dụng hàm destroy của Cloudinary để xóa, không cần await vì có thể chạy background
+            cloudinary_1.default.uploader.destroy(existingUser.publicIdAvatar).catch((err) => {
+                console.error(`Không thể xóa ảnh cũ (${existingUser.publicIdAvatar}) trên Cloudinary:`, err);
+            });
+        }
+        return updatedUser;
+    }
+    catch (error) {
+        throw error;
+    }
+};
+exports.uploadAvatarService = uploadAvatarService;
+const changePasswordService = async (user, { oldPassword, newPassword }) => {
+    try {
+        if (!user._id) {
+            return (0, throwError_1.default)("Not found user", status_codes_1.STATUS_CODES.NOT_FOUND);
+        }
+        const existingUser = await accountAdmin_1.default.findById(user._id).select("+password");
+        if (!existingUser) {
+            return (0, throwError_1.default)("Not found user", status_codes_1.STATUS_CODES.NOT_FOUND);
+        }
+        const isPasswordValid = await (0, auth_helpers_1.verifyPassword)(oldPassword, existingUser.password);
+        if (!isPasswordValid) {
+            return (0, throwError_1.default)("Old password is incorrect", status_codes_1.STATUS_CODES.BAD_REQUEST);
+        }
+        const hashedNewPassword = await (0, auth_helpers_1.hashPassword)(newPassword);
+        existingUser.password = hashedNewPassword;
+        await existingUser.save();
+        return null;
+    }
+    catch (error) {
+        throw error;
+    }
+};
+exports.changePasswordService = changePasswordService;
+const uploadStreamToCloudinary = (fileBuffer) => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary_1.default.uploader.upload_stream({
+            folder: common_1.FOLDER_UPLOAD_AVATARS,
+            transformation: [{ width: 150, height: 150, crop: 'fill', gravity: 'face' }]
+        }, (error, result) => {
+            if (error)
+                return reject(error);
+            if (!result)
+                return reject(new Error('Upload failed.'));
+            resolve(result);
+        });
+        uploadStream.end(fileBuffer);
+    });
+};

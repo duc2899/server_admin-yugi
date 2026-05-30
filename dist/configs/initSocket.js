@@ -10,7 +10,12 @@ function initSocket() {
             return;
         await redis_service_1.RedisService.set(`socket:${userId}`, socket.id, 60 * 60 * 24); // 24h
         socket.on('disconnect', async () => {
-            await redis_service_1.RedisService.del(`socket:${userId}`);
+            // Chỉ xóa nếu key hiện tại vẫn là socket của mình
+            // Tránh xóa nhầm socket của thiết bị khác vừa login
+            const current = await redis_service_1.RedisService.get(`socket:${userId}`);
+            if (current === socket.id) {
+                await redis_service_1.RedisService.del(`socket:${userId}`);
+            }
         });
     });
 }

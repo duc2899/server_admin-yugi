@@ -34,15 +34,23 @@ exports.envSchema = zod_1.z.object({
     // SMTP_USER: z.string(),
     // SMTP_PASS: z.string(),
     // EMAIL_FROM: z.email(),
-    // CLOUDINARY_CLOUD_NAME: z.string(),
-    // CLOUDINARY_API_KEY: z.string(),
-    // CLOUDINARY_API_SECRET: z.string(),
     // GOOGLE_CLIENT_ID: z.string(),
     // GOOGLE_CLIENT_SECRET: z.string(),
     // GOOGLE_REDIRECT_URI: z.url(),
     // GITHUB_CLIENT_ID: z.string(),
     // GITHUB_CLIENT_SECRET: z.string(),
     // GITHUB_REDIRECT_URI: z.url()
+    CLOUDINARY_CLOUD_NAME: zod_1.z.string(),
+    CLOUDINARY_API_KEY: zod_1.z.string(),
+    CLOUDINARY_API_SECRET: zod_1.z.string(),
+    GOOGLE_CREDENTIALS: zod_1.z.string().transform((str) => {
+        try {
+            return JSON.parse(str);
+        }
+        catch (error) {
+            throw new Error("GOOGLE_CREDENTIALS must be a valid JSON string");
+        }
+    }),
 });
 /**
  * Parse and validate environment variables once.

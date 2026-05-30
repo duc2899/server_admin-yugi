@@ -46,6 +46,8 @@ const AccountAdminSchema = new mongoose_1.Schema({
     username: { type: String, required: true },
     password: { type: String, required: true },
     isDisabled: { type: Boolean, default: false },
+    publicIdAvatar: { type: String, default: null },
+    avatar: { type: String, default: null },
     role: { type: String, required: true, default: RoleAccount.NORMAL },
     createdTime: { type: Date, required: true, default: Date.now },
     updatedTime: { type: Date, required: true, default: Date.now },
