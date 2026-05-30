@@ -4,6 +4,7 @@ import throwError from "../utils/throwError";
 import { STATUS_CODES } from "../constants/status-codes.";
 import { TokenBlacklistService } from "../services/tokenBlacklist.service";
 import { verifyToken } from "../services/auth.service";
+import { RedisService } from "../services/redis.service";
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -26,12 +27,18 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
             return throwError("Unauthorized", STATUS_CODES.UNAUTHORIZED);
         }
 
+        const decoded = verifyToken(token);
+
+        const validToken = await RedisService.get(`user_session:${decoded._id}`);
+        if (token !== validToken) {
+            return throwError("Unauthorized", STATUS_CODES.UNAUTHORIZED);
+        } 
         const isBlocked = await TokenBlacklistService.isBlacklisted(token);
         if (isBlocked) {
             return throwError("Unauthorized", STATUS_CODES.UNAUTHORIZED);
         }
 
-        req.user = verifyToken(token);
+        req.user = decoded;
         next();
     } catch (error) {
         next(throwError("Invalid or expired token", STATUS_CODES.UNAUTHORIZED));

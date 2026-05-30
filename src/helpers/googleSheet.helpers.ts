@@ -1,7 +1,8 @@
 import { google } from "googleapis";
+import env from "../configs/env";
 
 const getGoogleSheetsClient = () => {
-  const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS!);  
+  const credentials = env.GOOGLE_CREDENTIALS;
 
   const auth = new google.auth.GoogleAuth({
     credentials,

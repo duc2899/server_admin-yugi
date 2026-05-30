@@ -11,6 +11,8 @@ export interface IAccountAdmin {
     username: string;
     fullName: string;
     password: string;
+    avatar?: string;
+    publicIdAvatar?: string;
     role: RoleAccount;
     isDisabled: boolean;
     createdTime: Date;
@@ -25,6 +27,8 @@ const AccountAdminSchema: Schema = new Schema<IAccountAdmin>(
         username: { type: String, required: true },
         password: { type: String, required: true },
         isDisabled: {type: Boolean, default: false},
+        publicIdAvatar: { type: String, default: null },
+        avatar: { type: String, default: null },
         role: { type: String, required: true, default: RoleAccount.NORMAL },
         createdTime: { type: Date, required: true, default: Date.now },
         updatedTime: { type: Date, required: true, default: Date.now },

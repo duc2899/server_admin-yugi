@@ -3,6 +3,7 @@ import { changeRoleService, getAllAccountsService, getVersionClientService, setV
 import { changeRoleSchema, setVersionClientSchema, toggleBanSchema } from "../schemas/adminSchema";
 import { ApiResponse } from "../utils/api-response";
 import { getAccountsSchema } from "../schemas/accountSchema";
+import { getProfileService } from "../services/auth.service";
 
 const changeRoleController = async (req: Request, res: Response, next: NextFunction) => {
     try {

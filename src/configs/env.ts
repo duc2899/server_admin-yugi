@@ -39,10 +39,6 @@ export const envSchema = z.object({
   // SMTP_PASS: z.string(),
   // EMAIL_FROM: z.email(),
 
-  // CLOUDINARY_CLOUD_NAME: z.string(),
-  // CLOUDINARY_API_KEY: z.string(),
-  // CLOUDINARY_API_SECRET: z.string(),
-
   // GOOGLE_CLIENT_ID: z.string(),
   // GOOGLE_CLIENT_SECRET: z.string(),
   // GOOGLE_REDIRECT_URI: z.url(),
@@ -50,6 +46,16 @@ export const envSchema = z.object({
   // GITHUB_CLIENT_ID: z.string(),
   // GITHUB_CLIENT_SECRET: z.string(),
   // GITHUB_REDIRECT_URI: z.url()
+  CLOUDINARY_CLOUD_NAME: z.string(),
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string(),
+  GOOGLE_CREDENTIALS: z.string().transform((str) => {
+    try {
+      return JSON.parse(str);
+    } catch (error) {
+      throw new Error("GOOGLE_CREDENTIALS must be a valid JSON string");
+    }
+  }),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -14,3 +14,8 @@ export interface requestProfile {
     _id?: string | undefined
 }
 
+export interface requestChangePassword {
+    oldPassword: string;
+    newPassword: string;
+}
+

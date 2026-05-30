@@ -1,12 +1,14 @@
 import type { Response, NextFunction, Request } from "express";
 import jwt from "jsonwebtoken";
 
-import { loginService, registerService, getProfileService, logoutService } from "../services/auth.service";
-import { loginSchema, registerSchema } from "../schemas/authSchema";
+import { loginService, registerService, getProfileService, logoutService, uploadAvatarService, changePasswordService } from "../services/auth.service";
+import { changePasswordSchema, loginSchema, registerSchema } from "../schemas/authSchema";
 import { EXPRIE_COOKIE } from "../constants/common";
 import { ApiResponse } from "../utils/api-response";
 import env from "../configs/env";
 import { TokenBlacklistService } from "../services/tokenBlacklist.service";
+import cloudinary from "../configs/cloudinary";
+import { UploadApiResponse } from "cloudinary";
 
 const isProduction = env.NODE_ENV === "production";
 
@@ -38,8 +40,7 @@ const loginController = async (req: Request, res: Response, next: NextFunction) 
 
 const getProfileController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const _id = req.user?._id;
-        const user = await getProfileService({ _id });
+        const user = await getProfileService(req.user);
         return ApiResponse.ok(res, "Get information account successfully", user)
     } catch (error) {
         next(error);
@@ -78,5 +79,34 @@ const logoutController = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
+const uploadAvatarController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user;
+        const file = req.file;  
+        if (!file) {
+            return ApiResponse.badRequest(res, "No file uploaded");
+        }
 
-export { registerController, loginController, getProfileController, logoutController };
+        const updatedUser = await uploadAvatarService(user, file.buffer);
+
+        return ApiResponse.ok(res, "Avatar uploaded successfully", updatedUser);
+    } catch (error) {
+        console.error("Upload avatar error:", error);
+        next(error);
+    }
+};
+
+const changePasswordController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user;
+        const { oldPassword, newPassword } = changePasswordSchema.parse(req.body);
+
+        await changePasswordService(user, { oldPassword, newPassword });
+
+        return ApiResponse.ok(res, "Password changed successfully", null);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export { registerController, loginController, getProfileController, logoutController, uploadAvatarController, changePasswordController };
