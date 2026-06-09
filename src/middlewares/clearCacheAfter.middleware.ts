@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { CacheService } from "../services/cache.service";
-import { STATUS_CODES } from "../constants/status-codes.";
+import { STATUS_CODES } from "../constants/status-codes";
 
 export const clearCacheAfterSuccess = (tag: string) => {
     return (req: Request, res: Response, next: NextFunction) => {

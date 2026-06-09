@@ -5,7 +5,7 @@ import AccountAdmin, { RoleAccount } from "../models/accountAdmin";
 import { requestLogin, requestRegister, requestProfile, requestChangePassword } from "../types/auth";
 import throwError from "../utils/throwError";
 import { EXPRIE_TOKEN, FOLDER_UPLOAD_AVATARS } from "../constants/common";
-import { STATUS_CODES } from "../constants/status-codes.";
+import { STATUS_CODES } from "../constants/status-codes";
 import { hashPassword, verifyPassword } from "../helpers/auth.helpers";
 import { privateKey, publicKey } from "../configs/key";
 import { JwtPayload } from "../types/common";

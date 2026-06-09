@@ -1,7 +1,7 @@
 import type { Response, NextFunction, Request } from "express";
 
 import throwError from "../utils/throwError";
-import { STATUS_CODES } from "../constants/status-codes.";
+import { STATUS_CODES } from "../constants/status-codes";
 import { TokenBlacklistService } from "../services/tokenBlacklist.service";
 import { verifyToken } from "../services/auth.service";
 import { RedisService } from "../services/redis.service";

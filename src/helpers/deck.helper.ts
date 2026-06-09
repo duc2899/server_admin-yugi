@@ -1,4 +1,4 @@
-import { STATUS_CODES } from '../constants/status-codes.';
+import { STATUS_CODES } from '../constants/status-codes';
 import Card from "../models/card";
 import throwError from "../utils/throwError";
 

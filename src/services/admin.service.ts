@@ -3,7 +3,7 @@ import AccountAdmin from "../models/accountAdmin";
 import Config from "../models/config";
 import { requestChangeRole } from "../types/admin";
 import throwError from "../utils/throwError";
-import { STATUS_CODES } from '../constants/status-codes.';
+import { STATUS_CODES } from '../constants/status-codes';
 import { GetAccountsOptions } from '../types/account';
 import { VERSIONS } from '../constants/version.constant';
 import { createActivityLogService } from './activityLog.service';

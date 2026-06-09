@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { CacheService } from "../services/cache.service";
-import { STATUS_CODES } from "../constants/status-codes.";
+import { STATUS_CODES } from "../constants/status-codes";
 
 type CacheOptions = {
     ttl?: number;

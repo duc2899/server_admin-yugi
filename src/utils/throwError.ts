@@ -1,4 +1,4 @@
-import { StatusCode } from "../constants/status-codes.";
+import { StatusCode } from "../constants/status-codes";
 
 interface CustomError extends Error {
     statusCode: StatusCode;

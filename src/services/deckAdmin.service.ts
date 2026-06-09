@@ -1,4 +1,4 @@
-import { STATUS_CODES } from "../constants/status-codes.";
+import { STATUS_CODES } from "../constants/status-codes";
 import { validateDeckCards } from "../helpers/deck.helper";
 import DeckAdmin from "../models/deckAdmin";
 import { CreateDeckAdminPayload, DeleteDeckAdminPayload, getDeckAdminDetialPayload, SaveDeckAdminPayload } from "../types/deckAdmin";
