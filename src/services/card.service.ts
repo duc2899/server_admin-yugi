@@ -7,7 +7,7 @@ import {
 import { JwtPayload, PaginationOptions, ReqInfor } from "../types/common";
 import Card from "../models/card";
 import throwError from "../utils/throwError";
-import { STATUS_CODES } from "../constants/status-codes.";
+import { STATUS_CODES } from "../constants/status-codes";
 import { getGoogleSheetsClient } from "../helpers/googleSheet.helpers";
 import { createActivityLogService } from "./activityLog.service";
 import { emitRefreshConfig } from "../configs/socket";
