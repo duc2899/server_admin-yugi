@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const throwError_1 = __importDefault(require("../utils/throwError"));
-const status_codes_1 = require("../constants/status-codes.");
+const status_codes_1 = require("../constants/status-codes");
 const roleMiddleware = (...roles) => {
     return (req, res, next) => {
         if (!req.user || !roles.includes(req.user.role)) {

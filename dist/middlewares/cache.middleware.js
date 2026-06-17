@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cacheMiddleware = void 0;
 const cache_service_1 = require("../services/cache.service");
-const status_codes_1 = require("../constants/status-codes.");
+const status_codes_1 = require("../constants/status-codes");
 const cacheMiddleware = (options) => {
     const ttl = options?.ttl ? options.ttl * 60 : 300; // mặc định 5 phút
     const prefix = options?.prefix ?? "cache";

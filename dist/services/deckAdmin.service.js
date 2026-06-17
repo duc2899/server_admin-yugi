@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteDeckAdminService = exports.saveDeckAdminService = exports.getDeckAdminDetailService = exports.getAllDeckAdminService = exports.createDeckAdminService = void 0;
-const status_codes_1 = require("../constants/status-codes.");
+const status_codes_1 = require("../constants/status-codes");
 const deck_helper_1 = require("../helpers/deck.helper");
 const deckAdmin_1 = __importDefault(require("../models/deckAdmin"));
 const generateId_1 = require("../utils/generateId");

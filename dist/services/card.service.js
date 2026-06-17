@@ -7,7 +7,7 @@ exports.syncCardStatusFromSheetService = exports.setStatusCardService = exports.
 const cards_1 = require("../types/cards");
 const card_1 = __importDefault(require("../models/card"));
 const throwError_1 = __importDefault(require("../utils/throwError"));
-const status_codes_1 = require("../constants/status-codes.");
+const status_codes_1 = require("../constants/status-codes");
 const googleSheet_helpers_1 = require("../helpers/googleSheet.helpers");
 const activityLog_service_1 = require("./activityLog.service");
 const getAllCards = async ({ page = 1, limit = 10 }) => {

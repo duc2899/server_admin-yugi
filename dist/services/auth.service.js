@@ -11,11 +11,10 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const accountAdmin_1 = __importDefault(require("../models/accountAdmin"));
 const throwError_1 = __importDefault(require("../utils/throwError"));
 const common_1 = require("../constants/common");
-const status_codes_1 = require("../constants/status-codes.");
+const status_codes_1 = require("../constants/status-codes");
 const auth_helpers_1 = require("../helpers/auth.helpers");
 const key_1 = require("../configs/key");
 const redis_service_1 = require("./redis.service");
-const server_1 = require("../server");
 const cloudinary_1 = __importDefault(require("../configs/cloudinary"));
 const registerService = async ({ username, password, fullName }) => {
     try {
@@ -52,13 +51,6 @@ const loginService = async ({ username, password }) => {
         const isPasswordValid = await (0, auth_helpers_1.verifyPassword)(password, user.password);
         if (!isPasswordValid) {
             return (0, throwError_1.default)("Invalid username or password", status_codes_1.STATUS_CODES.UNAUTHORIZED);
-        }
-        const existingSocketId = await redis_service_1.RedisService.get(`socket:${user._id}`);
-        if (existingSocketId) {
-            // Thiết bị A đang online → emit cảnh báo rồi kick
-            server_1.io.to(existingSocketId).emit('DEVICE_LOGIN_DETECTED', {
-                message: 'Tài khoản của bạn vừa được đăng nhập ở thiết bị khác'
-            });
         }
         const token = signToken(user._id, user.role, user.username);
         await redis_service_1.RedisService.set(`user_session:${user._id}`, token);

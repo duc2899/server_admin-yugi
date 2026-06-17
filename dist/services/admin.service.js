@@ -7,7 +7,7 @@ exports.toggleBanUserService = exports.setVersionClientService = exports.getVers
 const accountAdmin_1 = __importDefault(require("../models/accountAdmin"));
 const config_1 = __importDefault(require("../models/config"));
 const throwError_1 = __importDefault(require("../utils/throwError"));
-const status_codes_1 = require("../constants/status-codes.");
+const status_codes_1 = require("../constants/status-codes");
 const version_constant_1 = require("../constants/version.constant");
 const activityLog_service_1 = require("./activityLog.service");
 const changeRoleService = async ({ role, _id }, user, reqInfo) => {

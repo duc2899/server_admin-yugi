@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiResponse = void 0;
-const status_codes_1 = require("../constants/status-codes.");
+const status_codes_1 = require("../constants/status-codes");
 class ApiResponse {
     constructor({ success, message, statusCode, data = null, errors }) {
         this.success = success;
