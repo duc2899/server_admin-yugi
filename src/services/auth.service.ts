@@ -10,7 +10,6 @@ import { hashPassword, verifyPassword } from "../helpers/auth.helpers";
 import { privateKey, publicKey } from "../configs/key";
 import { JwtPayload } from "../types/common";
 import { RedisService } from "./redis.service";
-import { io } from "../server";
 import { UploadApiResponse } from "cloudinary";
 import cloudinary from "../configs/cloudinary";
 
@@ -52,16 +51,6 @@ export const loginService = async ({ username, password }: requestLogin) => {
         const isPasswordValid = await verifyPassword(password, user.password);
         if (!isPasswordValid) {
             return throwError("Invalid username or password", STATUS_CODES.UNAUTHORIZED);
-        }
-
-        const existingSocketId = await RedisService.get(`socket:${user._id}`);
-
-        if (existingSocketId) {
-
-            // Thiết bị A đang online → emit cảnh báo rồi kick
-            io.to(existingSocketId).emit('DEVICE_LOGIN_DETECTED', {
-                message: 'Tài khoản của bạn vừa được đăng nhập ở thiết bị khác'
-            })
         }
 
         const token = signToken(user._id, user.role, user.username);

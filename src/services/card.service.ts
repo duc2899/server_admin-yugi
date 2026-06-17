@@ -10,7 +10,6 @@ import throwError from "../utils/throwError";
 import { STATUS_CODES } from "../constants/status-codes";
 import { getGoogleSheetsClient } from "../helpers/googleSheet.helpers";
 import { createActivityLogService } from "./activityLog.service";
-import { emitRefreshConfig } from "../configs/socket";
 
 const getAllCards = async ({ page = 1, limit = 10 }: PaginationOptions) => {
   const skip = (page - 1) * limit;
