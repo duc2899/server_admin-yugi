@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectRedis = void 0;
 const redis_1 = require("redis");
 const redisClient = (0, redis_1.createClient)({
-    username: process.env.REDIS_USERNAME || "default",
+    username: "",
     password: process.env.REDIS_PASSWORD,
     socket: {
         host: process.env.REDIS_HOST,
