@@ -1,17 +1,14 @@
 import { createClient } from "redis";
 import env from "./env";
 
-console.log(env.NODE_ENV);
-
-
 const redisClient = createClient({
     ...(env.NODE_ENV === "development" && {
-        username: process.env.REDIS_USERNAME || "default",
+        username: env.REDIS_USERNAME || "default",
     }),
-    password: process.env.REDIS_PASSWORD,
+    password: env.REDIS_PASSWORD,
     socket: {
-        host: "127.0.0.1",
-        port: 9379,
+        host: env.REDIS_HOST || "127.0.0.1",
+        port: env.REDIS_PORT
     },
 });
 
