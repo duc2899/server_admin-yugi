@@ -87,4 +87,3 @@ scripts/
 export/
 keys/
 keys/private.pem
-src/configs/redis.ts
