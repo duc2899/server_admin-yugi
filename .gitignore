@@ -87,3 +87,4 @@ scripts/
 export/
 keys/
 keys/private.pem
+/dist
