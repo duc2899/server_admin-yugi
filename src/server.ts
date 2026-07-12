@@ -1,11 +1,12 @@
 import http from "http";
 import express from "express";
+import swaggerUi from "swagger-ui-express";
+
 import { connectDB } from "./configs/db";
 import { setupSecurity } from "./configs/security";
 import env from "./configs/env";
 import errorHandler from "./middlewares/errorHandeler";
 import initRouter from "./routes/index";
-import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger";
 import { configureGracefulShutdown } from "./utils/shutdown";
 import { logger } from "./utils/logger";

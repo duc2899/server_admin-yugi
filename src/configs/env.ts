@@ -1,10 +1,15 @@
-import "dotenv-flow/config";
+import dotenvFlow from "dotenv-flow";
 import { z } from "zod";
 /**
  * Environment variable schema
  * - All validation happens at startup
  * - Fails fast on misconfiguration
  */
+
+if (process.env.NODE_ENV !== "production") {
+  dotenvFlow.config();
+}
+
 export const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
