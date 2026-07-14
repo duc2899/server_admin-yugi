@@ -10,7 +10,7 @@ import initRouter from "./routes/index";
 import swaggerSpec from "./swagger";
 import { configureGracefulShutdown } from "./utils/shutdown";
 import { logger } from "./utils/logger";
-import connectRedis from "./configs/redis";
+import { connectRedis } from "./configs/redis";
 
 const app = express();
 const server = http.createServer(app);
@@ -24,7 +24,7 @@ setupSecurity(app);
 connectDB();
 
 // connect redis
-connectRedis.connect();
+void connectRedis();
 
 // setup routes
 app.use("/api/v1", initRouter);
