@@ -3,7 +3,6 @@ import { changeRoleService, getAllAccountsService, getVersionClientService, setV
 import { changeRoleSchema, setVersionClientSchema, toggleBanSchema } from "../schemas/adminSchema";
 import { ApiResponse } from "../utils/api-response";
 import { getAccountsSchema } from "../schemas/accountSchema";
-import { getProfileService } from "../services/auth.service";
 
 const changeRoleController = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -53,7 +52,7 @@ const setVersionClientController = async (req: Request, res: Response, next: Nex
 const toggleBanUserController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = toggleBanSchema.parse(req.body);
-        const data = await toggleBanUserService(parsed);
+        const data = await toggleBanUserService(parsed, req.user);
         return ApiResponse.ok(res, "Toggle ban successfully", data)
     } catch (error) {
         next(error);

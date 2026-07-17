@@ -127,8 +127,13 @@ const setVersionClientService = async ({ version, type }: requestSetVersionClien
     }
 };
 
-const toggleBanUserService = async ({ _id }: requestToggleBanUser) => {
+const toggleBanUserService = async ({ _id }: requestToggleBanUser, userInfor: JwtPayload) => {
     try {
+
+        if(_id === userInfor?._id) {
+            return throwError("Cannot ban yourself", STATUS_CODES.BAD_REQUEST);
+        }
+
         const user = await AccountAdmin.findById(_id);
 
         if (!user) {

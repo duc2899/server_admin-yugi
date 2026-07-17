@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken"
 
 import AccountAdmin, { RoleAccount } from "../models/accountAdmin";
-import { requestLogin, requestRegister, requestProfile, requestChangePassword } from "../types/auth";
+import { requestLogin, requestRegister, requestChangePassword } from "../types/auth";
 import throwError from "../utils/throwError";
 import { EXPRIE_TOKEN, FOLDER_UPLOAD_AVATARS } from "../constants/common";
 import { STATUS_CODES } from "../constants/status-codes";
@@ -57,6 +57,8 @@ export const loginService = async ({ username, password }: requestLogin) => {
 
         await RedisService.set(`user_session:${user._id}`, token);
 
+        await AccountAdmin.updateOne({ _id: user._id }, { lastedLogin: Date.now() })
+
         return {
             token,
             user: {
@@ -89,23 +91,6 @@ export const getProfileService = async (user: JwtPayload) => {
     }
 }
 
-export const logoutService = async ({ _id }: requestProfile) => {
-    try {
-        if (!_id) {
-            return throwError("Not found user", STATUS_CODES.NOT_FOUND);
-        }
-
-        const user = await AccountAdmin.findOneAndUpdate({ _id }, { lastedLogin: Date.now() });
-        if (!user) {
-            return throwError("Not found user", STATUS_CODES.NOT_FOUND);
-        }
-
-        return null;
-
-    } catch (error: any) {
-        throw error;
-    }
-}
 
 export function signToken(userId: string, role: RoleAccount, username: string): string {
     return jwt.sign(
@@ -181,7 +166,7 @@ export const changePasswordService = async (user: JwtPayload, { oldPassword, new
     catch (error: any) {
         throw error;
     }
-}   
+}
 
 const uploadStreamToCloudinary = (fileBuffer: Buffer): Promise<UploadApiResponse> => {
     return new Promise((resolve, reject) => {
