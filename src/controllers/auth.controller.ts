@@ -1,14 +1,13 @@
 import type { Response, NextFunction, Request } from "express";
 import jwt from "jsonwebtoken";
 
-import { loginService, registerService, getProfileService, logoutService, uploadAvatarService, changePasswordService } from "../services/auth.service";
+import { loginService, registerService, getProfileService, uploadAvatarService, changePasswordService } from "../services/auth.service";
 import { changePasswordSchema, loginSchema, registerSchema } from "../schemas/authSchema";
 import { EXPRIE_COOKIE } from "../constants/common";
 import { ApiResponse } from "../utils/api-response";
 import env from "../configs/env";
 import { TokenBlacklistService } from "../services/tokenBlacklist.service";
-import cloudinary from "../configs/cloudinary";
-import { UploadApiResponse } from "cloudinary";
+
 
 const isProduction = env.NODE_ENV === "production";
 
@@ -65,15 +64,13 @@ const logoutController = async (req: Request, res: Response, next: NextFunction)
             }
         }
 
-        const data = await logoutService({ _id });
-
         res.clearCookie("access_token", {
             httpOnly: true,
             secure: isProduction,
             sameSite: isProduction ? "none" : "lax",
         });
 
-        return ApiResponse.ok(res, "Logout successful", data);
+        return ApiResponse.ok(res, "Logout successful");
     } catch (error) {
         next(error);
     }
