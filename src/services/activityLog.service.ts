@@ -7,24 +7,25 @@ const createActivityLogService = async (payload: CreateLogPayload) => {
         await ActivityLog.create(payload);
         return true;
     } catch (error) {
-        console.log("CREATE LOG ERROR:", error);
         return false; // log fail thì không nên làm fail API chính
     }
 };
 
 const getActivityLogsService = async ({
     action,
+    userId,
     page,
     limit,
 }: GetLogPayload) => {
     const query: any = {};
 
     if (action) query.action = action;
+    if (userId) query.userId = userId;
 
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
-        ActivityLog.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+        ActivityLog.find(query).sort({ createdAt: -1 }).select("-metadata").skip(skip).limit(limit).populate("userId", 'username').lean(),
         ActivityLog.countDocuments(query),
     ]);
 

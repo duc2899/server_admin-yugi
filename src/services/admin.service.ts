@@ -41,14 +41,11 @@ const changeRoleService = async ({ role, _id }: requestChangeRole, user: JwtPayl
 }
 
 const getAllAccountsService = async (options: GetAccountsOptions) => {
-    const { page = 1, limit = 10, key } = options;
-    const skip = (page - 1) * limit;
-
+    const { page = 1, limit = 10, key, isAll = false } = options;
     const query: any = {};
 
     if (key?.trim()) {
         const k = key.trim();
-
         query.$or = [
             { fullName: { $regex: k, $options: "i" } },
             { username: { $regex: k, $options: "i" } },
@@ -56,6 +53,17 @@ const getAllAccountsService = async (options: GetAccountsOptions) => {
         ];
     }
 
+    // CASE 1: Lấy tất cả làm dropdown (Trả thẳng 1 cục Array, chỉ lấy _id và username)
+    if (isAll) {
+        const users = await AccountAdmin.find(query)
+            .select('_id username')
+            .sort({ createdTime: -1 })
+            .lean();
+        return users; // Trả thẳng luôn [ { _id: ..., username: ... }, ... ]
+    }
+
+    // CASE 2: Phân trang như cũ
+    const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
         AccountAdmin.find(query)
@@ -130,7 +138,7 @@ const setVersionClientService = async ({ version, type }: requestSetVersionClien
 const toggleBanUserService = async ({ _id }: requestToggleBanUser, userInfor: JwtPayload) => {
     try {
 
-        if(_id === userInfor?._id) {
+        if (_id === userInfor?._id) {
             return throwError("Cannot ban yourself", STATUS_CODES.BAD_REQUEST);
         }
 
