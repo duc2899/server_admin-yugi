@@ -1,4 +1,3 @@
-
 services:
   api:
     build: .
@@ -11,4 +10,25 @@ services:
       - .env
       - .env.production
 
+    # redis_prod publish 9379:6379 — container không thể dùng 127.0.0.1:9379.
+    # Cách 1 (mặc định): qua host gateway → host:9379
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    environment:
+      REDIS_HOST: ${REDIS_DOCKER_HOST:-host.docker.internal}
+      REDIS_PORT: ${REDIS_DOCKER_PORT:-9379}
+
+    # Cách 2 (khuyến nghị): cùng network với redis_prod → redis_prod:6379
+    # Bỏ comment block dưới, set DOCKER_NETWORK trong .env, rồi:
+    #   docker network connect $DOCKER_NETWORK redis_prod
+    #   docker compose up -d --build
+    # networks:
+    #   - backend
+
     restart: unless-stopped
+
+# networks:
+#   backend:
+#     external: true
+#     name: ${DOCKER_NETWORK}
