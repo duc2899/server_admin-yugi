@@ -40,8 +40,8 @@ const changeRoleService = async ({ role, _id }: requestChangeRole, user: JwtPayl
     }
 }
 
-const getAllAccountsService = async (options: GetAccountsOptions) => {
-    const { page = 1, limit = 10, key, isAll = false } = options;
+const getAllAccountsDetailService = async (options: GetAccountsOptions) => {
+    const { page = 1, limit = 10, key } = options;
     const query: any = {};
 
     if (key?.trim()) {
@@ -54,13 +54,7 @@ const getAllAccountsService = async (options: GetAccountsOptions) => {
     }
 
     // CASE 1: Lấy tất cả làm dropdown (Trả thẳng 1 cục Array, chỉ lấy _id và username)
-    if (isAll) {
-        const users = await AccountAdmin.find(query)
-            .select('_id username')
-            .sort({ createdTime: -1 })
-            .lean();
-        return users; // Trả thẳng luôn [ { _id: ..., username: ... }, ... ]
-    }
+
 
     // CASE 2: Phân trang như cũ
     const skip = (page - 1) * limit;
@@ -84,6 +78,19 @@ const getAllAccountsService = async (options: GetAccountsOptions) => {
             totalPages: Math.ceil(total / limit)
         }
     };
+}
+
+const getAllAccountService = async () => {
+    try {
+        const users = await AccountAdmin.find()
+            .select('_id username')
+            .sort({ createdTime: -1 })
+            .lean();
+        return users; // Trả thẳng luôn [ { _id: ..., username: ... }, ... ]
+    } catch (error: any) {
+        throw error;
+    }
+
 }
 
 const getVersionClientService = async () => {
@@ -160,4 +167,4 @@ const toggleBanUserService = async ({ _id }: requestToggleBanUser, userInfor: Jw
     }
 }
 
-export { changeRoleService, getAllAccountsService, getVersionClientService, setVersionClientService, toggleBanUserService }
+export { changeRoleService, getAllAccountsDetailService, getAllAccountService, getVersionClientService, setVersionClientService, toggleBanUserService }

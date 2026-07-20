@@ -1,5 +1,5 @@
 import router from "express";
-import { changeRoleController, getAllAccountsController, getVersionClientController, setVersionClientController, toggleBanUserController } from "../controllers/admin.controller";
+import { changeRoleController, getAllAccountsDetailController, getAllAccountsController, getVersionClientController, setVersionClientController, toggleBanUserController } from "../controllers/admin.controller";
 import authMiddleware from "../middlewares/auth.middleware";
 import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAccount } from "../models/accountAdmin";
@@ -48,7 +48,7 @@ adminRoute.post(
 
 /**
  * @swagger
- * /api/v1/admin/accounts:
+ * /api/v1/admin/accounts/detail:
  *   get:
  *     summary: Get all accounts
  *     tags: [Services Admin]
@@ -77,14 +77,32 @@ adminRoute.post(
  *           default: 10
  *         required: false
  *         description: Limit response
- * 
- *       - in: query
- *         name: isAll
- *         schema:
- *           type: boolean
- *           default: false
- *         required: false
- *         description: Return All
+ *
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+adminRoute.get(
+    "/accounts/detail",
+    authMiddleware,
+    roleMiddleware(RoleAccount.ADMIN),
+    cacheMiddleware({
+        ttl: 5,
+        prefix: "accounts-detail-admin-list",
+        tag: "accounts-detail-admin",
+        skipAuth: true,
+    }),
+    getAllAccountsDetailController
+);
+
+/**
+ * @swagger
+ * /api/v1/admin/accounts:
+ *   get:
+ *     summary: Get all accounts
+ *     tags: [Services Admin]
+ *     security:
+ *       - bearerAuth: []
  *
  *     responses:
  *       200:
