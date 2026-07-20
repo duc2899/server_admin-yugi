@@ -6,9 +6,8 @@ export const getAccountsSchema = z.object({
     limit: z.coerce.number().min(1).max(100).default(10),
     isAll: z
         .preprocess((val) => {
-            if (val === "true" || val === true) return true;
-            if (val === "false" || val === false) return false;
-            return undefined; // để nó rơi vào giá trị default nếu không truyền
+            // Nhận cả 1, "1", true, "true" để CHẮC CHẮN không bị lọt
+            return val === "1" || val === 1 || val === "true" || val === true;
         }, z.boolean())
-        .default(false) // Tự động là false nếu client không truyền lên
+        .default(false)
 });
