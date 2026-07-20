@@ -1,5 +1,5 @@
 import type { Response, NextFunction, Request } from "express";
-import { changeRoleService, getAllAccountsService, getVersionClientService, setVersionClientService, toggleBanUserService } from "../services/admin.service";
+import { changeRoleService, getAllAccountsDetailService, getAllAccountService, getVersionClientService, setVersionClientService, toggleBanUserService } from "../services/admin.service";
 import { changeRoleSchema, setVersionClientSchema, toggleBanSchema } from "../schemas/adminSchema";
 import { ApiResponse } from "../utils/api-response";
 import { getAccountsSchema } from "../schemas/accountSchema";
@@ -19,9 +19,18 @@ const changeRoleController = async (req: Request, res: Response, next: NextFunct
 
 const getAllAccountsController = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const data = await getAllAccountService();
+        return ApiResponse.ok(res, "Accounts detail fetched successfully", data)
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getAllAccountsDetailController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
         const parsed = getAccountsSchema.parse(req.query);
-        const data = await getAllAccountsService(parsed);
-        return ApiResponse.ok(res, "Accounts fetched successfully", data)
+        const data = await getAllAccountsDetailService(parsed);
+        return ApiResponse.ok(res, "Accounts detail fetched successfully", data)
     } catch (error) {
         next(error);
     }
@@ -59,4 +68,4 @@ const toggleBanUserController = async (req: Request, res: Response, next: NextFu
     }
 };
 
-export { changeRoleController, getAllAccountsController, getVersionClientController, setVersionClientController, toggleBanUserController }
+export { changeRoleController, getAllAccountsDetailController, getVersionClientController, getAllAccountsController, setVersionClientController, toggleBanUserController }
