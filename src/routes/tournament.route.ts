@@ -2,6 +2,7 @@ import router from "express";
 import { getAllTournamentController, getTournamentDetailController } from "../controllers/tournament.controller";
 import authMiddleware from "../middlewares/auth.middleware";
 import { cacheMiddleware } from "../middlewares/cache.middleware";
+import { withDataEnv } from "../middlewares/withDataEnv";
 
 const tournamentRoute = router.Router();
 
@@ -58,6 +59,7 @@ const tournamentRoute = router.Router();
 tournamentRoute.get(
     "/",
     authMiddleware,
+    withDataEnv,
     cacheMiddleware({
         ttl: 5,
         prefix: "tournaments-list",

@@ -10,6 +10,7 @@ import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
 import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAccount } from "../models/accountAdmin";
+import { withDataEnv } from "../middlewares/withDataEnv";
 
 const cardRoute = router.Router();
 
@@ -45,6 +46,7 @@ const cardRoute = router.Router();
 cardRoute.get(
   "/",
   authMiddleware,
+  withDataEnv, // thêm ngay sau authMiddleware
   cacheMiddleware({
     ttl: 15,
     prefix: "cards-list",
@@ -185,6 +187,7 @@ cardRoute.get(
 cardRoute.get(
   "/search",
   authMiddleware,
+  withDataEnv, // thêm ngay sau authMiddleware  
   cacheMiddleware({
     ttl: 5,
     prefix: "cards-search",
@@ -225,6 +228,7 @@ cardRoute.get(
 cardRoute.post(
   "/set-status",
   authMiddleware,
+  withDataEnv, // thêm ngay sau authMiddleware
   roleMiddleware(RoleAccount.ADMIN),
   clearCacheAfterSuccess("cards"),
   setCardStatusController
@@ -265,6 +269,7 @@ cardRoute.post(
 cardRoute.post(
   "/sync-status",
   authMiddleware,
+  withDataEnv,
   roleMiddleware(RoleAccount.ADMIN),
   clearCacheAfterSuccess("cards"),
   syncCardStatusFromSheetController

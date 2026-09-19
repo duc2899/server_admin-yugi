@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+import { adminConnection } from "../configs/db";
+
 import { LOG_ACTIONS, LogAction, TARGET_TYPES, TargetType } from "../constants/activityLog..constant";
 
 
@@ -41,7 +43,7 @@ ActivityLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 1
 // index để query nhanh theo user
 ActivityLogSchema.index({ userId: 1, createdAt: -1 });
 
-const ActivityLog = mongoose.model<IActivityLog>(
+const ActivityLog = adminConnection.model<IActivityLog>(
     "activity_logs",
     ActivityLogSchema,
     "activity_logs"

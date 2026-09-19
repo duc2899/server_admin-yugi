@@ -4,6 +4,7 @@ import { fetchAllAccounts } from "../controllers/account.controller";
 import roleMiddleware from "../middlewares/roleMiddleware";
 import { RoleAccount } from "../models/accountAdmin";
 import { cacheMiddleware } from "../middlewares/cache.middleware";
+import { withDataEnv } from "../middlewares/withDataEnv";
 
 const accountRoute = router.Router();
 
@@ -46,6 +47,7 @@ const accountRoute = router.Router();
 accountRoute.get(
     "/",
     authMiddleware,
+    withDataEnv, // thêm ngay sau authMiddleware
     roleMiddleware(RoleAccount.ADMIN, RoleAccount.NORMAL),
     cacheMiddleware({
         ttl: 5,

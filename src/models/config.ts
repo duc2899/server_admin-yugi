@@ -1,5 +1,7 @@
-import mongoose, { Schema } from "mongoose";
+import { Schema } from "mongoose";
+
 import { VERSIONS, VersionType } from "../constants/version.constant";
+import { createMultiDbModel } from "../utils/multiDbModel";
 
 export interface IConfig {
     _id: VersionType;
@@ -13,6 +15,4 @@ const ConfigSchema: Schema = new Schema<IConfig>(
     }
 )
 
-const Config = mongoose.model<IConfig>("config", ConfigSchema, "config")
-
-export default Config
+export const Config = createMultiDbModel<IConfig>("config", ConfigSchema, "config");

@@ -1,6 +1,5 @@
 import { requestSetVersionClient, requestToggleBanUser } from '../types/admin';
 import AccountAdmin from "../models/accountAdmin";
-import Config from "../models/config";
 import { requestChangeRole } from "../types/admin";
 import throwError from "../utils/throwError";
 import { STATUS_CODES } from '../constants/status-codes';
@@ -8,6 +7,8 @@ import { GetAccountsOptions } from '../types/account';
 import { VERSIONS } from '../constants/version.constant';
 import { createActivityLogService } from './activityLog.service';
 import { JwtPayload, ReqInfor } from '../types/common';
+import { IConfig } from '../models/config';
+import { Model } from 'mongoose';
 
 const changeRoleService = async ({ role, _id }: requestChangeRole, user: JwtPayload, reqInfo?: ReqInfor) => {
     try {
@@ -93,7 +94,7 @@ const getAllAccountService = async () => {
 
 }
 
-const getVersionClientService = async () => {
+const getVersionClientService = async (Config: Model<IConfig>) => {
     try {
         const config = await Config.find({
             _id: { $in: VERSIONS }
@@ -108,7 +109,7 @@ const getVersionClientService = async () => {
     }
 }
 
-const setVersionClientService = async ({ version, type }: requestSetVersionClient, user: JwtPayload, reqInfo?: ReqInfor) => {
+const setVersionClientService = async (Config: Model<IConfig>, { version, type }: requestSetVersionClient, user: JwtPayload, reqInfo?: ReqInfor) => {
     try {
         const config = await Config.findOneAndUpdate(
             { _id: type },

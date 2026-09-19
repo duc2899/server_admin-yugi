@@ -1,5 +1,7 @@
-import mongoose, { Schema } from "mongoose";
+import { Schema } from "mongoose";
+
 import { CARD_ACTIVATE_STATUS, CARD_LIMIT_STATUS } from "../types/cards";
+import { createMultiDbModel } from "../utils/multiDbModel";
 
 export interface ICard {
     _id: string;
@@ -62,5 +64,4 @@ CardSchema.index({ monsterType: 1 });
 CardSchema.index({ monsterAttribute: 1 });
 CardSchema.index({ level: 1 });
 
-const Card = mongoose.model<ICard>("card", CardSchema, "card");
-export default Card;
+export const Card = createMultiDbModel<ICard>("card", CardSchema, "card");

@@ -1,5 +1,5 @@
-import mongoose, { Schema } from "mongoose";
-
+import { Schema } from "mongoose";
+import { createMultiDbModel } from "../utils/multiDbModel";
 export interface IAccount {
     _id: string;
     avatarImage: string;
@@ -42,6 +42,4 @@ const AccountSchema: Schema = new Schema<IAccount>(
     }
 );
 
-
-const Account = mongoose.model<IAccount>("account", AccountSchema, "account");
-export default Account;
+export const Account = createMultiDbModel<IAccount>("account", AccountSchema, "account");

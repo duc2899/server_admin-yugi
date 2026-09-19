@@ -7,7 +7,7 @@ import { ApiResponse } from "../utils/api-response";
 const fetchAllAccounts = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = getAccountsSchema.parse(req.query);
-        const data = await getAllAccounts(parsed);
+        const data = await getAllAccounts(req.models.Account, parsed);
         ApiResponse.ok(res, "Accounts fetched successfully", data)
     } catch (error) {
         next(error);

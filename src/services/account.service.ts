@@ -1,12 +1,13 @@
-import Account from "../models/account";
+import { Model } from "mongoose";
+import { IAccount } from "../models/account";
 import { GetAccountsOptions } from "../types/account";
 
-const getAllAccounts = async (options: GetAccountsOptions) => {
+const getAllAccounts = async (Account: Model<IAccount>, options: GetAccountsOptions) => {
     const { page = 1, limit = 10, key } = options;
     const skip = (page - 1) * limit;
 
     const query: any = {};
-    
+
     if (key?.trim()) {
         const k = key.trim();
 
@@ -26,7 +27,6 @@ const getAllAccounts = async (options: GetAccountsOptions) => {
             .lean(),
         Account.countDocuments(query)
     ]);
-
     return {
         data,
         pagination: {

@@ -5,13 +5,14 @@ import {
   TYPE_CARDS,
 } from "../types/cards";
 import { JwtPayload, PaginationOptions, ReqInfor } from "../types/common";
-import Card from "../models/card";
 import throwError from "../utils/throwError";
 import { STATUS_CODES } from "../constants/status-codes";
 import { getGoogleSheetsClient } from "../helpers/googleSheet.helpers";
 import { createActivityLogService } from "./activityLog.service";
+import { ICard } from "../models/card";
+import { Model } from "mongoose";
 
-const getAllCards = async ({ page = 1, limit = 10 }: PaginationOptions) => {
+const getAllCards = async (Card: Model<ICard>, { page = 1, limit = 10 }: PaginationOptions) => {
   const skip = (page - 1) * limit;
 
   const [data, total] = await Promise.all([
@@ -30,7 +31,7 @@ const getAllCards = async ({ page = 1, limit = 10 }: PaginationOptions) => {
   };
 };
 
-const searchCards = async (options: SearchCardOptions) => {
+const searchCards = async (Card: Model<ICard>, options: SearchCardOptions) => {
   const {
     page = 1,
     limit = 10,
@@ -134,7 +135,7 @@ const searchCards = async (options: SearchCardOptions) => {
   };
 };
 
-const setStatusCardService = async ({
+const setStatusCardService = async (Card: Model<ICard>, {
   code,
   cardLimitStatus,
   activeStatus,
@@ -153,7 +154,7 @@ const setStatusCardService = async ({
   return card;
 };
 
-const syncCardStatusFromSheetService = async ({
+const syncCardStatusFromSheetService = async (Card: Model<ICard>, {
   sheetUrl,
   gid,
   type,

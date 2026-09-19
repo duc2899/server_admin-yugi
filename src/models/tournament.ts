@@ -1,5 +1,5 @@
-import mongoose, { Schema } from "mongoose";
-
+import { Schema } from "mongoose";
+import { createMultiDbModel } from "../utils/multiDbModel";
 interface IRegester {
     playerId: string;
     deckId: string;
@@ -32,7 +32,7 @@ export interface ITournament {
 const tournamentSchema = new Schema<ITournament>({
     _id: { type: String, required: true },
     name: { type: String, required: true },
-    bannishCardCodes: { type: [String], required: true },   
+    bannishCardCodes: { type: [String], required: true },
     createdTime: { type: Date, required: true, default: Date.now },
     desc: { type: String, default: null },
     image: { type: String, default: null },
@@ -52,6 +52,4 @@ const tournamentSchema = new Schema<ITournament>({
     winPlayerId: { type: String, default: null },
 });
 
-const Tournament = mongoose.model<ITournament>("tournament", tournamentSchema, "tournament");
-
-export default Tournament;
+export const Tournament = createMultiDbModel<ITournament>("tournament", tournamentSchema, "tournament");

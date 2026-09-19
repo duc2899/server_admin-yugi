@@ -8,7 +8,7 @@ import { ApiResponse } from '../utils/api-response';
 const getAllTournamentController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = getTournamentSchema.parse(req.query);
-        const data = await getAllTournamentsService(parsed);
+        const data = await getAllTournamentsService(req.models.Tournament, parsed);
         return ApiResponse.ok(res, "Tournaments fetched successfully", data)
     } catch (error) {
         next(error);
@@ -18,7 +18,7 @@ const getAllTournamentController = async (req: Request, res: Response, next: Nex
 const getTournamentDetailController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = getTournamentDetail.parse(req.params);
-        const data = await getTournamentDetailService(parsed);
+        const data = await getTournamentDetailService(req.models.Tournament, parsed);
         return ApiResponse.ok(res, "Tournaments fetched successfully", data)
     } catch (error) {
         next(error);

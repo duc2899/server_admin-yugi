@@ -48,7 +48,6 @@ const getProfileController = async (req: Request, res: Response, next: NextFunct
 
 const logoutController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const _id = req.user?._id;
 
         const token = req.cookies?.access_token;
 

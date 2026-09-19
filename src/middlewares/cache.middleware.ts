@@ -10,7 +10,7 @@ type CacheOptions = {
 };
 
 export const cacheMiddleware = (options?: CacheOptions) => {
-    const ttl = options?.ttl ? options.ttl * 60: 300; // mặc định 5 phút
+    const ttl = options?.ttl ? options.ttl * 60 : 300; // mặc định 5 phút
     const prefix = options?.prefix ?? "cache";
     const tag = options?.tag;
     const skipAuth = options?.skipAuth ?? false;
@@ -22,8 +22,9 @@ export const cacheMiddleware = (options?: CacheOptions) => {
                 return next();
             }
 
-            // Key theo URL + query
-            const cacheKey = CacheService.buildKey(prefix, req.originalUrl);
+            // Key theo URL + query + dataEnv (nếu route có withDataEnv chạy trước)
+            const envSegment = req.dataEnv ? `env:${req.dataEnv}` : "";
+            const cacheKey = CacheService.buildKey(prefix, envSegment, req.originalUrl);
 
             const cached = await CacheService.getJSON<any>(cacheKey);
             if (cached) {
@@ -38,7 +39,9 @@ export const cacheMiddleware = (options?: CacheOptions) => {
                     CacheService.setJSON(cacheKey, body, ttl).catch(console.error);
 
                     if (tag) {
-                        CacheService.addKeyToTag(tag, cacheKey).catch(console.error);
+                        // tag cũng nên gắn theo env, không thì clear tag "accounts" sẽ xoá luôn cache của cả 2 env cùng lúc
+                        const taggedKey = req.dataEnv ? `${tag}:${req.dataEnv}` : tag;
+                        CacheService.addKeyToTag(taggedKey, cacheKey).catch(console.error);
                     }
                 }
 

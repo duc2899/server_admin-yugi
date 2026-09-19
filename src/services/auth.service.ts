@@ -53,7 +53,7 @@ export const loginService = async ({ username, password }: requestLogin) => {
             return throwError("Invalid username or password", STATUS_CODES.UNAUTHORIZED);
         }
 
-        const token = signToken(user._id, user.role, user.username);
+        const token = signToken(user._id, user.role, user.username, user.role === "admin");
 
         await RedisService.set(`user_session:${user._id}`, token);
 
@@ -65,7 +65,7 @@ export const loginService = async ({ username, password }: requestLogin) => {
                 _id: user._id,
                 username: user.username,
                 fullName: user.fullName,
-                role: user.role
+                role: user.role,
             }
         }
     } catch (error: any) {
@@ -92,9 +92,9 @@ export const getProfileService = async (user: JwtPayload) => {
 }
 
 
-export function signToken(userId: string, role: RoleAccount, username: string): string {
+export function signToken(userId: string, role: RoleAccount, username: string, isAdmin: boolean): string {
     return jwt.sign(
-        { _id: userId, role, username } satisfies Omit<JwtPayload, 'iat' | 'exp'>,
+        { _id: userId, role, username, allowedEnvs: isAdmin ? ["dev", "live"] : ["dev"] } satisfies Omit<JwtPayload, 'iat' | 'exp'>,
         privateKey,
         { algorithm: 'ES256', expiresIn: EXPRIE_TOKEN }
     )

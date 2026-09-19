@@ -1,4 +1,5 @@
-import mongoose, { Schema } from "mongoose";
+import { Schema } from "mongoose";
+import { adminConnection } from "../configs/db";
 
 
 export enum RoleAccount {
@@ -26,7 +27,7 @@ const AccountAdminSchema: Schema = new Schema<IAccountAdmin>(
         fullName: { type: String, required: true },
         username: { type: String, required: true },
         password: { type: String, required: true },
-        isDisabled: {type: Boolean, default: false},
+        isDisabled: { type: Boolean, default: false },
         publicIdAvatar: { type: String, default: null },
         avatar: { type: String, default: null },
         role: { type: String, required: true, default: RoleAccount.NORMAL },
@@ -36,5 +37,5 @@ const AccountAdminSchema: Schema = new Schema<IAccountAdmin>(
     }
 );
 
-const AccountAdmin = mongoose.model<IAccountAdmin>("account_admin", AccountAdminSchema, "account_admin");
+const AccountAdmin = adminConnection.model<IAccountAdmin>("account", AccountAdminSchema, "account");
 export default AccountAdmin;

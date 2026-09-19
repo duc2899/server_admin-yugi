@@ -1,17 +1,18 @@
 import { STATUS_CODES } from "../constants/status-codes";
 import { validateDeckCards } from "../helpers/deck.helper";
-import DeckAdmin from "../models/deckAdmin";
 import { CreateDeckAdminPayload, DeleteDeckAdminPayload, getDeckAdminDetialPayload, SaveDeckAdminPayload } from "../types/deckAdmin";
 import { generateLongId } from "../utils/generateId";
 import throwError from "../utils/throwError";
-import Card from "../models/card";
 import { createActivityLogService } from "./activityLog.service";
 import { JwtPayload, ReqInfor } from "../types/common";
+import { Model } from "mongoose";
+import { IDeckAdmin } from "../models/deckAdmin";
+import { ICard } from "../models/card";
 
-const createDeckAdminService = async (payload: CreateDeckAdminPayload, user: JwtPayload, reqInfo?: ReqInfor) => {
+const createDeckAdminService = async (DeckAdmin: Model<IDeckAdmin>, Card: Model<ICard>, payload: CreateDeckAdminPayload, user: JwtPayload, reqInfo?: ReqInfor) => {
     try {
         const { name, type = "DEFAULT", mainDeckCards, sideDeckCards, extraDeckCards } = payload;
-        const cleanDeck = await validateDeckCards({ mainDeckCards, sideDeckCards, extraDeckCards });
+        const cleanDeck = await validateDeckCards({ mainDeckCards, sideDeckCards, extraDeckCards }, Card);
         const newDeckAdmin = new DeckAdmin({
             _id: generateLongId(),
             name,
@@ -46,7 +47,7 @@ const createDeckAdminService = async (payload: CreateDeckAdminPayload, user: Jwt
     }
 };
 
-const getAllDeckAdminService = async () => {
+const getAllDeckAdminService = async (DeckAdmin: Model<IDeckAdmin>) => {
     try {
         const data = await DeckAdmin.find()
             .select("type name _id")
@@ -63,7 +64,7 @@ const getAllDeckAdminService = async () => {
     }
 };
 
-const saveDeckAdminService = async (payload: SaveDeckAdminPayload, user: JwtPayload, reqInfo?: ReqInfor) => {
+const saveDeckAdminService = async (DeckAdmin: Model<IDeckAdmin>, Card: Model<ICard>, payload: SaveDeckAdminPayload, user: JwtPayload, reqInfo?: ReqInfor) => {
     try {
         const { id, name, type, mainDeckCards, sideDeckCards, extraDeckCards } = payload;
 
@@ -77,7 +78,7 @@ const saveDeckAdminService = async (payload: SaveDeckAdminPayload, user: JwtPayl
             mainDeckCards,
             sideDeckCards,
             extraDeckCards,
-        });
+        }, Card);
 
         deck.name = name;
         deck.type = type;
@@ -112,7 +113,7 @@ const saveDeckAdminService = async (payload: SaveDeckAdminPayload, user: JwtPayl
     }
 };
 
-const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
+const getDeckAdminDetailService = async (DeckAdmin: Model<IDeckAdmin>, Card: Model<ICard>, { id }: getDeckAdminDetialPayload) => {
     try {
         const deck = await DeckAdmin.findOne({ _id: id }).lean();
 
@@ -172,7 +173,7 @@ const getDeckAdminDetailService = async ({ id }: getDeckAdminDetialPayload) => {
     }
 };
 
-const deleteDeckAdminService = async ({ id }: DeleteDeckAdminPayload) => {
+const deleteDeckAdminService = async (DeckAdmin: Model<IDeckAdmin>, { id }: DeleteDeckAdminPayload) => {
     try {
         const deck = await DeckAdmin.findOne({ _id: id });
         if (!deck) {

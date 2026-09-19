@@ -9,7 +9,9 @@ export const clearCacheAfterSuccess = (tag: string) => {
         res.json = (body: any) => {
             // chỉ clear nếu status OK
             if (res.statusCode >= STATUS_CODES.OK && res.statusCode < 300) {
-                CacheService.clearTag(tag).catch(console.error);
+                // ghép dataEnv để khớp đúng tag mà cacheMiddleware đã lưu
+                const taggedKey = req.dataEnv ? `${tag}:${req.dataEnv}` : tag;
+                CacheService.clearTag(taggedKey).catch(console.error);
             }
 
             return originalJson(body);

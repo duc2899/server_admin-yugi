@@ -1,3 +1,4 @@
+import { Account } from './../models/account';
 import type { Response, NextFunction, Request } from "express";
 import { changeRoleService, getAllAccountsDetailService, getAllAccountService, getVersionClientService, setVersionClientService, toggleBanUserService } from "../services/admin.service";
 import { changeRoleSchema, setVersionClientSchema, toggleBanSchema } from "../schemas/adminSchema";
@@ -38,7 +39,7 @@ const getAllAccountsDetailController = async (req: Request, res: Response, next:
 
 const getVersionClientController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const data = await getVersionClientService();
+        const data = await getVersionClientService(req.models.Config);
         return ApiResponse.ok(res, "Get version successfully", data)
     } catch (error) {
         next(error);
@@ -48,7 +49,7 @@ const getVersionClientController = async (req: Request, res: Response, next: Nex
 const setVersionClientController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const parsed = setVersionClientSchema.parse(req.body);
-        const data = await setVersionClientService(parsed, req.user, {
+        const data = await setVersionClientService(req.models.Config, parsed, req.user, {
             ip: req.ip,
             userAgent: req.headers["user-agent"] || "",
         });

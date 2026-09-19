@@ -16,6 +16,12 @@ export const envSchema = z.object({
     .default("development"),
 
   PORT: z.string().regex(/^\d+$/, "PORT must be a number").transform(Number),
+  MONGO_USER: z.string(),
+  MONGO_PASS: z.string(),
+  MONGO_HOST: z.string(),
+  MONGO_DB_DEV: z.string(),
+  MONGO_DB_LIVE: z.string(),
+  MONGO_DB_ADMIN: z.string(),
 
   DATABASE_URL: z.url(),
 

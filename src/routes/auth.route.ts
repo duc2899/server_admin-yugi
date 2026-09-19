@@ -2,6 +2,7 @@ import router from "express";
 import { loginController, registerController, getProfileController, logoutController, uploadAvatarController, changePasswordController } from "../controllers/auth.controller";
 import authMiddleware from "../middlewares/auth.middleware";
 import { uploadMiddleware } from "../middlewares/upload.middleware";
+import { withDataEnv } from "../middlewares/withDataEnv";
 const authRoute = router.Router();
 
 /**
@@ -82,7 +83,7 @@ authRoute.post("/login", loginController);
  *       200:
  *         description: Success
  */
-authRoute.get("/profile", authMiddleware, getProfileController);
+authRoute.get("/profile", authMiddleware, withDataEnv, getProfileController);
 
 /**
  * @swagger
@@ -96,7 +97,7 @@ authRoute.get("/profile", authMiddleware, getProfileController);
  *       200:
  *         description: Success
  */
-authRoute.get("/logout", authMiddleware, logoutController);
+authRoute.get("/logout", authMiddleware, withDataEnv, logoutController);
 
 /**
  * @swagger
@@ -146,6 +147,7 @@ authRoute.get("/logout", authMiddleware, logoutController);
 authRoute.post(
     "/upload-avatar",
     authMiddleware,
+    withDataEnv,
     uploadMiddleware.single("avatar"),
     uploadAvatarController
 );
@@ -181,6 +183,6 @@ authRoute.post(
  *       400:
  *         description: Invalid old password
  */
-authRoute.post("/change-password", authMiddleware, changePasswordController);
+authRoute.post("/change-password", authMiddleware, withDataEnv, changePasswordController);
 
 export default authRoute;

@@ -1,6 +1,7 @@
+import { Model } from 'mongoose';
 import { STATUS_CODES } from '../constants/status-codes';
-import Card from "../models/card";
 import throwError from "../utils/throwError";
+import { ICard } from '../models/card';
 
 type DeckCardInput = { code: string; number: number };
 
@@ -25,7 +26,7 @@ export const validateDeckCards = async ({
     mainDeckCards: DeckCardInput[];
     sideDeckCards: DeckCardInput[];
     extraDeckCards: DeckCardInput[];
-}) => {
+}, Card: Model<ICard>) => {
     // normalize (gộp code trùng nhau)
     const cleanMainDeckCards = mergeCardsByCode(mainDeckCards);
     const cleanSideDeckCards = mergeCardsByCode(sideDeckCards);

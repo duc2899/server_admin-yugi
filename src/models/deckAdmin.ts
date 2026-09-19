@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import mongooseLong from "mongoose-long";
 import { DECK_TYPES, DeckType } from '../constants/deck.constant';
+import { createMultiDbModel } from "../utils/multiDbModel";
 
 mongooseLong(mongoose);
 
@@ -47,10 +48,4 @@ const DeckAdminSchema: Schema = new Schema<IDeckAdmin>(
     }
 );
 
-const DeckAdmin = mongoose.model<IDeckAdmin>(
-    "deck_admin",
-    DeckAdminSchema,
-    "deck_admin"
-);
-
-export default DeckAdmin;
+export const DeckAdmin = createMultiDbModel<IDeckAdmin>("deck_admin", DeckAdminSchema, "deck_admin");

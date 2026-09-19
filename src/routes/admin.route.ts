@@ -7,6 +7,7 @@ import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
 import { createDeckController, deleteDeckAdminController, getAllDeckController, getDeckAdminDetailController, saveDeckController } from "../controllers/deckAdmin.controller";
 import { getActivityLogsController } from "../controllers/activityLog.controller";
+import { withDataEnv } from "../middlewares/withDataEnv";
 
 const adminRoute = router.Router();
 
@@ -41,8 +42,9 @@ const adminRoute = router.Router();
 adminRoute.post(
     "/change-role",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN),
-    clearCacheAfterSuccess("accounts-admin"),
+    clearCacheAfterSuccess("accounts-detail-admin-list"),
     changeRoleController
 );
 
@@ -85,6 +87,7 @@ adminRoute.post(
 adminRoute.get(
     "/accounts/detail",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN),
     cacheMiddleware({
         ttl: 5,
@@ -111,6 +114,7 @@ adminRoute.get(
 adminRoute.get(
     "/accounts",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN),
     cacheMiddleware({
         ttl: 5,
@@ -136,6 +140,7 @@ adminRoute.get(
 adminRoute.get(
     "/get-version-client",
     authMiddleware,
+    withDataEnv,
     cacheMiddleware({
         ttl: 30,
         prefix: "version-client",
@@ -176,6 +181,7 @@ adminRoute.get(
 adminRoute.post(
     "/set-version-client",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN),
     clearCacheAfterSuccess("version-client"),
     setVersionClientController
@@ -208,6 +214,7 @@ adminRoute.post(
 adminRoute.post(
     "/toggle-ban",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN),
     clearCacheAfterSuccess("accounts-admin"),
     toggleBanUserController
@@ -256,6 +263,7 @@ adminRoute.post(
 adminRoute.post(
     "/create-deck",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN),
     createDeckController
 );
@@ -273,6 +281,7 @@ adminRoute.post(
 adminRoute.get(
     "/get-decks",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN, RoleAccount.NORMAL),
     getAllDeckController
 );
@@ -300,6 +309,7 @@ adminRoute.get(
 adminRoute.get(
     "/get-deck/:id",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN, RoleAccount.NORMAL),
     getDeckAdminDetailController
 );
@@ -332,6 +342,7 @@ adminRoute.get(
 adminRoute.post(
     "/delete-deck",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN),
     deleteDeckAdminController
 );
@@ -384,6 +395,7 @@ adminRoute.post(
 adminRoute.post(
     "/save-deck",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN),
     saveDeckController
 );
@@ -425,6 +437,7 @@ adminRoute.post(
 adminRoute.get(
     "/get-logs",
     authMiddleware,
+    withDataEnv,
     roleMiddleware(RoleAccount.ADMIN, RoleAccount.NORMAL),
     getActivityLogsController
 );

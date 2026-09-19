@@ -1,8 +1,8 @@
 import { RedisService } from "./redis.service";
 
 export class CacheService {
-    static buildKey(prefix: string, key: string) {
-        return `${prefix}:${key}`;
+    static buildKey(...parts: (string | undefined)[]) {
+        return parts.filter(Boolean).join(":");
     }
 
     static async getJSON<T>(key: string): Promise<T | null> {
@@ -18,7 +18,6 @@ export class CacheService {
     // Mỗi tag sẽ chứa list keys thuộc tag đó
     static async addKeyToTag(tag: string, key: string) {
         const tagKey = `tag:${tag}`;
-        await RedisService.set(tagKey, JSON.stringify([key])); // fallback nếu tag chưa tồn tại
 
         const current = await this.getJSON<string[]>(tagKey);
         const set = new Set(current || []);

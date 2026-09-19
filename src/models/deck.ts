@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import mongooseLong from "mongoose-long";
+import { createMultiDbModel } from "../utils/multiDbModel";
 
 mongooseLong(mongoose);
 
@@ -46,12 +47,6 @@ const DeckSchema: Schema = new Schema<IDeck>(
     }
 );
 
-DeckCardSchema.index({ playerId: 1, name: 1})
+DeckCardSchema.index({ playerId: 1, name: 1 })
 
-const Deck = mongoose.model<IDeck>(
-    "deck",
-    DeckSchema,
-    "deck"
-);
-
-export default Deck;
+export const Deck = createMultiDbModel<IDeck>("deck", DeckSchema, "deck");

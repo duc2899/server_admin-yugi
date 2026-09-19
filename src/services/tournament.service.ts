@@ -1,8 +1,9 @@
+import { Model } from "mongoose";
+import { ITournament } from "../models/tournament";
 import { GetTournamentOptions, GetTournamentDetail } from "../types/tournament";
-import Tournament from "../models/tournament";
 import throwError from "../utils/throwError";
 
-const getAllTournamentsService = async (options: GetTournamentOptions) => {
+const getAllTournamentsService = async (Tournament: Model<ITournament>, options: GetTournamentOptions) => {
     const { page = 1, limit = 10, name, type, status } = options;
     const skip = (page - 1) * limit;
 
@@ -32,7 +33,7 @@ const getAllTournamentsService = async (options: GetTournamentOptions) => {
     };
 }
 
-const getTournamentDetailService = async ({ id }: GetTournamentDetail) => {
+const getTournamentDetailService = async (Tournament: Model<ITournament>, { id }: GetTournamentDetail) => {
     const converId = Number(id);
 
     const [tournament] = await Tournament.aggregate([
