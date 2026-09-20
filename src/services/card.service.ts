@@ -178,10 +178,7 @@ const syncCardStatusFromSheetService = async (Card: Model<ICard>, {
     );
 
     if (!sheetMeta) {
-      return throwError(
-        `Not found gid with value "${gid}"`,
-        STATUS_CODES.NOT_FOUND,
-      );
+      return throwError(`Not found gid with value "${gid}"`, STATUS_CODES.NOT_FOUND);
     }
 
     const tabName = sheetMeta.properties?.title!;
@@ -205,23 +202,21 @@ const syncCardStatusFromSheetService = async (Card: Model<ICard>, {
     const validValues = isActivateType ? [0, 1] : [0, 1, 2, 3];
     const updateField = isActivateType ? "activeStatus" : "cardLimitStatus";
 
-    // Ngoài for - chuẩn bị track row notFound
-    const notFoundRowIndexes: number[] = [];
+    // Bước 1: lọc và validate trước, KHÔNG đụng DB trong bước này
+    type ParsedRow = { rowIndex: number; code: string; parsedStatus: number };
+    const validRows: ParsedRow[] = [];
 
     for (let i = 0; i < dataRows.length; i++) {
       const [name, code, status, banish] = dataRows[i];
       const rawValue = isActivateType ? status : banish;
       if (!code || rawValue === undefined) continue;
-      if (code === -1) continue;
 
-      // Thêm vào đây
       if (rawValue?.trim() === "-1") {
         results.skipped.push(code);
         continue;
       }
 
       const parsedStatus = parseInt(rawValue);
-
       if (isNaN(parsedStatus) || !validValues.includes(parsedStatus)) {
         results.errors.push(
           `${code}: invalid status "${rawValue}" (chỉ chấp nhận ${validValues.join(", ")})`,
@@ -229,33 +224,55 @@ const syncCardStatusFromSheetService = async (Card: Model<ICard>, {
         continue;
       }
 
-      const card = await Card.findOne({ code })
-        .select("activeStatus cardLimitStatus code")
-        .lean();
-
-      if (!card) {
-        results.notFound.push(code);
-        notFoundRowIndexes.push(i + 2); // +2 vì header + 1-indexed
-        continue;
-      }
-
-      if (card[updateField] === parsedStatus) {
-        results.skipped.push(code);
-        continue;
-      }
-
-      await Card.updateOne({ code }, { $set: { [updateField]: parsedStatus } });
-      results.updated.push(code);
+      validRows.push({ rowIndex: i + 2, code, parsedStatus });
     }
 
-    // Ghi -1 lên cột C (status) cho các row notFound
+    // Bước 2: 1 lần fetch TẤT CẢ card liên quan, thay vì fetch từng cái
+    const codes = validRows.map((r) => r.code);
+    const existingCards = await Card.find({ code: { $in: codes } })
+      .select("code activeStatus cardLimitStatus")
+      .lean();
+    const cardMap = new Map(existingCards.map((c) => [c.code, c]));
+
+    // Bước 3: gom các thay đổi thật sự cần update thành bulkWrite
+    const bulkOps: any[] = [];
+    const notFoundRowIndexes: number[] = [];
+
+    for (const row of validRows) {
+      const card = cardMap.get(row.code);
+
+      if (!card) {
+        results.notFound.push(row.code);
+        notFoundRowIndexes.push(row.rowIndex);
+        continue;
+      }
+
+      if (card[updateField] === row.parsedStatus) {
+        results.skipped.push(row.code);
+        continue;
+      }
+
+      bulkOps.push({
+        updateOne: {
+          filter: { code: row.code },
+          update: { $set: { [updateField]: row.parsedStatus } },
+        },
+      });
+      results.updated.push(row.code);
+    }
+
+    // Bước 4: 1 lần ghi TẤT CẢ thay đổi, thay vì từng updateOne riêng lẻ
+    if (bulkOps.length > 0) {
+      await Card.bulkWrite(bulkOps);
+    }
+
     if (notFoundRowIndexes.length > 0) {
       await sheets.spreadsheets.values.batchUpdate({
         spreadsheetId: sheetId,
         requestBody: {
           valueInputOption: "RAW",
           data: notFoundRowIndexes.map((rowIndex) => ({
-            range: `${tabName}!C${rowIndex}`, // cột C là status
+            range: `${tabName}!C${rowIndex}`,
             values: [["-1"]],
           })),
         },
@@ -272,12 +289,7 @@ const syncCardStatusFromSheetService = async (Card: Model<ICard>, {
       message: `${user.username} synced card status from sheet ${sheetUrl} (updated: ${results.updated.length}, skipped: ${results.skipped.length}, not found: ${results.notFound.length}, errors: ${results.errors.length})`,
       ip: reqInfo?.ip,
       userAgent: reqInfo?.userAgent,
-      metadata: {
-        sheetUrl,
-        gid,
-        type,
-        results,
-      }
+      metadata: { sheetUrl, gid, type, results },
     });
 
     return {
