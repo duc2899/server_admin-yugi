@@ -27,6 +27,8 @@ export interface ITournament {
     type: string;
     updatedTime: Date;
     winPlayerId: string | null;
+    matchFormat?: string;
+    intermissionSeconds?: number;
 }
 
 const tournamentSchema = new Schema<ITournament>({
@@ -50,6 +52,8 @@ const tournamentSchema = new Schema<ITournament>({
     type: { type: String, required: true },
     updatedTime: { type: Date, default: Date.now },
     winPlayerId: { type: String, default: null },
+    matchFormat: { type: String, default: "BO1" },
+    intermissionSeconds: { type: Number, default: 120 },
 });
 
 export const Tournament = createMultiDbModel<ITournament>("tournament", tournamentSchema, "tournament");
