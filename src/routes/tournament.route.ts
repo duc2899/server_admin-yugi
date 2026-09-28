@@ -93,6 +93,7 @@ tournamentRoute.get(
 tournamentRoute.get(
     "/:id",
     authMiddleware,
+    withDataEnv,
     cacheMiddleware({
         ttl: 5,
         prefix: "tournament-detail",
