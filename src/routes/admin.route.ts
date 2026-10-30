@@ -7,6 +7,7 @@ import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
 import { createDeckController, deleteDeckAdminController, getAllDeckController, getDeckAdminDetailController, saveDeckController } from "../controllers/deckAdmin.controller";
 import { getActivityLogsController } from "../controllers/activityLog.controller";
+import { listMailsController, sendMailController } from "../controllers/mailAdmin.controller";
 import { withDataEnv } from "../middlewares/withDataEnv";
 
 const adminRoute = router.Router();
@@ -440,6 +441,92 @@ adminRoute.get(
     withDataEnv,
     roleMiddleware(RoleAccount.ADMIN, RoleAccount.NORMAL),
     getActivityLogsController
+);
+
+/**
+ * @swagger
+ * /api/v1/admin/mail/send:
+ *   post:
+ *     summary: Send mail to a player
+ *     tags: [Services Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *             properties:
+ *               accountId:
+ *                 type: string
+ *               username:
+ *                 type: string
+ *               title:
+ *                 type: string
+ *               body:
+ *                 type: string
+ *               rewards:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     type:
+ *                       type: string
+ *                       example: CARD
+ *                     code:
+ *                       type: string
+ *                     qty:
+ *                       type: number
+ *     responses:
+ *       200:
+ *         description: Mail sent
+ */
+adminRoute.post(
+    "/mail/send",
+    authMiddleware,
+    withDataEnv,
+    roleMiddleware(RoleAccount.ADMIN),
+    sendMailController
+);
+
+/**
+ * @swagger
+ * /api/v1/admin/mail:
+ *   get:
+ *     summary: List mails (optional filter by account)
+ *     tags: [Services Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: accountId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: username
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+adminRoute.get(
+    "/mail",
+    authMiddleware,
+    withDataEnv,
+    roleMiddleware(RoleAccount.ADMIN),
+    listMailsController
 );
 
 

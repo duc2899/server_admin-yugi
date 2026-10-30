@@ -9,9 +9,10 @@ export const LOG_ACTIONS = [
     "CHANGE_ROLE",
     "SET_VERSION",
     "SYNC_CARD_STATUS",
+    "SEND_MAIL",
 ] as const;
 
 export type LogAction = (typeof LOG_ACTIONS)[number];
 
-export const TARGET_TYPES = ["DECK", "USER", "CARD", "SYSTEM"] as const;
+export const TARGET_TYPES = ["DECK", "USER", "CARD", "SYSTEM", "MAIL"] as const;
 export type TargetType = (typeof TARGET_TYPES)[number];

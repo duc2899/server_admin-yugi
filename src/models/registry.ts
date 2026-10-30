@@ -6,6 +6,7 @@ import { Tournament } from "./tournament";
 import { DeckAdmin } from "./deckAdmin";
 import { Deck } from "./deck";
 import { Config } from "./config";
+import { Mail } from "./mail";
 
 export const getModelsForConnection = (connection: Connection) => ({
     Card: Card(connection),
@@ -14,6 +15,7 @@ export const getModelsForConnection = (connection: Connection) => ({
     DeckAdmin: DeckAdmin(connection),
     Deck: Deck(connection),
     Config: Config(connection),
+    Mail: Mail(connection),
 });
 
 // Suy type từ chính hàm trên — không cần viết tay
