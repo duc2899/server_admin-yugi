@@ -27,18 +27,20 @@ const mailRewardSchema = z
         }
     });
 
-export const sendMailSchema = z
-    .object({
-        accountId: z.union([z.string(), z.number()]).optional(),
-        username: z.string().optional(),
-        title: z.string().min(1).max(200),
-        body: z.string().max(5000).default(""),
-        rewards: z.array(mailRewardSchema).default([]),
-    })
-    .refine((v) => v.accountId != null || (v.username != null && v.username.trim().length > 0), {
-        message: "accountId or username is required",
-        path: ["accountId"],
-    });
+export const sendMailSchema = z.object({
+    accountIds: z
+        .array(z.union([z.string(), z.number()]))
+        .min(1, "At least one recipient is required")
+        .max(50, "Too many recipients"),
+    title: z.string().min(1).max(200),
+    body: z.string().max(5000).default(""),
+    rewards: z.array(mailRewardSchema).default([]),
+});
+
+export const searchMailRecipientsSchema = z.object({
+    q: z.string().trim().min(1).max(100),
+    limit: z.coerce.number().int().positive().max(20).default(10),
+});
 
 export const listMailQuerySchema = z.object({
     accountId: z.union([z.string(), z.number()]).optional(),

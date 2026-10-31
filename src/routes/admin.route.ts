@@ -7,7 +7,7 @@ import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
 import { createDeckController, deleteDeckAdminController, getAllDeckController, getDeckAdminDetailController, saveDeckController } from "../controllers/deckAdmin.controller";
 import { getActivityLogsController } from "../controllers/activityLog.controller";
-import { listMailsController, sendMailController } from "../controllers/mailAdmin.controller";
+import { listMailsController, searchMailRecipientsController, sendMailController } from "../controllers/mailAdmin.controller";
 import { withDataEnv } from "../middlewares/withDataEnv";
 
 const adminRoute = router.Router();
@@ -458,12 +458,13 @@ adminRoute.get(
  *           schema:
  *             type: object
  *             required:
+ *               - accountIds
  *               - title
  *             properties:
- *               accountId:
- *                 type: string
- *               username:
- *                 type: string
+ *               accountIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *               title:
  *                 type: string
  *               body:
@@ -490,6 +491,36 @@ adminRoute.post(
     withDataEnv,
     roleMiddleware(RoleAccount.ADMIN),
     sendMailController
+);
+
+/**
+ * @swagger
+ * /api/v1/admin/mail/recipients:
+ *   get:
+ *     summary: Search mail recipients by username or id
+ *     tags: [Services Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+adminRoute.get(
+    "/mail/recipients",
+    authMiddleware,
+    withDataEnv,
+    roleMiddleware(RoleAccount.ADMIN),
+    searchMailRecipientsController
 );
 
 /**
