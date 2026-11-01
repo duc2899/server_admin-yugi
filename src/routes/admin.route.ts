@@ -7,7 +7,7 @@ import { cacheMiddleware } from "../middlewares/cache.middleware";
 import { clearCacheAfterSuccess } from "../middlewares/clearCacheAfter.middleware";
 import { createDeckController, deleteDeckAdminController, getAllDeckController, getDeckAdminDetailController, saveDeckController } from "../controllers/deckAdmin.controller";
 import { getActivityLogsController } from "../controllers/activityLog.controller";
-import { listMailsController, searchMailRecipientsController, sendMailController } from "../controllers/mailAdmin.controller";
+import { listMailsController, recallMailController, searchMailRecipientsController, sendMailController } from "../controllers/mailAdmin.controller";
 import { withDataEnv } from "../middlewares/withDataEnv";
 
 const adminRoute = router.Router();
@@ -519,7 +519,7 @@ adminRoute.get(
     "/mail/recipients",
     authMiddleware,
     withDataEnv,
-    roleMiddleware(RoleAccount.ADMIN),
+    roleMiddleware(RoleAccount.ADMIN, RoleAccount.NORMAL),
     searchMailRecipientsController
 );
 
@@ -556,8 +556,16 @@ adminRoute.get(
     "/mail",
     authMiddleware,
     withDataEnv,
-    roleMiddleware(RoleAccount.ADMIN),
+    roleMiddleware(RoleAccount.ADMIN, RoleAccount.NORMAL),
     listMailsController
+);
+
+adminRoute.delete(
+    "/mail/:id",
+    authMiddleware,
+    withDataEnv,
+    roleMiddleware(RoleAccount.ADMIN),
+    recallMailController
 );
 
 

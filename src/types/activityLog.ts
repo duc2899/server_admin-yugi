@@ -14,7 +14,7 @@ export interface CreateLogPayload {
 }
 
 export interface GetLogPayload {
-    action?: string;
+    action?: LogAction;
     page: number;
     userId?: string;
     limit: number;

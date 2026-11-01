@@ -1,13 +1,11 @@
 import mongoose, { Schema } from "mongoose";
 import mongooseLong from "mongoose-long";
 import { createMultiDbModel } from "../utils/multiDbModel";
+import { MailRewardType, MailStatus } from "../constants/mail.constant";
 
 mongooseLong(mongoose);
 
 const { Long } = Schema.Types;
-
-export type MailStatus = "UNREAD" | "READ" | "CLAIMED";
-export type MailRewardType = "CARD" | "RUBY" | string;
 
 export interface IMailReward {
     type: MailRewardType;
@@ -42,9 +40,9 @@ const MailSchema: Schema = new Schema<IMail>(
         accountId: { type: Long, required: true, index: true },
         status: {
             type: String,
-            enum: ["UNREAD", "READ", "CLAIMED"],
+            enum: MailStatus,
             required: true,
-            default: "UNREAD",
+            default: MailStatus.UNREAD as MailStatus,
         },
         title: { type: String, required: true },
         body: { type: String, required: true, default: "" },

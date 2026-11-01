@@ -11,6 +11,7 @@ import { getGoogleSheetsClient } from "../helpers/googleSheet.helpers";
 import { createActivityLogService } from "./activityLog.service";
 import { ICard } from "../models/card";
 import { Model } from "mongoose";
+import { LogAction, TargetType } from "../constants/activityLog..constant";
 
 const getAllCards = async (Card: Model<ICard>, { page = 1, limit = 10 }: PaginationOptions) => {
   const skip = (page - 1) * limit;
@@ -282,8 +283,8 @@ const syncCardStatusFromSheetService = async (Card: Model<ICard>, {
     await createActivityLogService({
       userId: user._id.toString(),
       username: user.username,
-      action: "SYNC_CARD_STATUS",
-      targetType: "CARD",
+      action: LogAction.SYNC_CARD_STATUS as LogAction,
+      targetType: TargetType.CARD as TargetType,
       targetId: sheetUrl,
       targetName: tabName,
       message: `${user.username} synced card status from sheet ${sheetUrl} (updated: ${results.updated.length}, skipped: ${results.skipped.length}, not found: ${results.notFound.length}, errors: ${results.errors.length})`,

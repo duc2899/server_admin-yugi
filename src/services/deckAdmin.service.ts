@@ -8,6 +8,7 @@ import { JwtPayload, ReqInfor } from "../types/common";
 import { Model } from "mongoose";
 import { IDeckAdmin } from "../models/deckAdmin";
 import { ICard } from "../models/card";
+import { LogAction, TargetType } from "../constants/activityLog..constant";
 
 const createDeckAdminService = async (DeckAdmin: Model<IDeckAdmin>, Card: Model<ICard>, payload: CreateDeckAdminPayload, user: JwtPayload, reqInfo?: ReqInfor) => {
     try {
@@ -25,8 +26,8 @@ const createDeckAdminService = async (DeckAdmin: Model<IDeckAdmin>, Card: Model<
         await createActivityLogService({
             userId: user._id.toString(),
             username: user.username,
-            action: "CREATE_DECK",
-            targetType: "DECK",
+            action: LogAction.CREATE_DECK as LogAction,
+            targetType: TargetType.DECK as TargetType,
             targetId: newDeckAdmin._id.toString(),
             targetName: newDeckAdmin.name,
             message: `${user.username} created deck ${newDeckAdmin.name}`,
@@ -92,8 +93,8 @@ const saveDeckAdminService = async (DeckAdmin: Model<IDeckAdmin>, Card: Model<IC
         await createActivityLogService({
             userId: user._id.toString(),
             username: user.username,
-            action: "UPDATE_DECK",
-            targetType: "DECK",
+            action: LogAction.UPDATE_DECK as LogAction,
+            targetType: TargetType.DECK as TargetType,
             targetId: deck._id.toString(),
             targetName: deck.name,
             message: `${user.username} save deck ${deck.name}`,

@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { adminConnection } from "../configs/db";
 
-import { LOG_ACTIONS, LogAction, TARGET_TYPES, TargetType } from "../constants/activityLog..constant";
+import { LogAction, TargetType } from "../constants/activityLog..constant";
 
 
 export interface IActivityLog {
@@ -23,8 +23,8 @@ const ActivityLogSchema = new Schema<IActivityLog>(
     {
         userId: { type: String, required: true },
         username: { type: String },
-        action: { type: String, enum: LOG_ACTIONS, required: true },
-        targetType: { type: String, enum: TARGET_TYPES },
+        action: { type: String, enum: LogAction, required: true },
+        targetType: { type: String, enum: TargetType },
         targetId: { type: String },
         targetName: { type: String },
         message: { type: String, required: true },

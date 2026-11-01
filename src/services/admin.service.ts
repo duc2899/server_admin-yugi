@@ -9,6 +9,7 @@ import { createActivityLogService } from './activityLog.service';
 import { JwtPayload, ReqInfor } from '../types/common';
 import { IConfig } from '../models/config';
 import { Model } from 'mongoose';
+import { LogAction, TargetType } from '../constants/activityLog..constant';
 
 const changeRoleService = async ({ role, _id }: requestChangeRole, user: JwtPayload, reqInfo?: ReqInfor) => {
     try {
@@ -20,8 +21,8 @@ const changeRoleService = async ({ role, _id }: requestChangeRole, user: JwtPayl
         await createActivityLogService({
             userId: user._id.toString(),
             username: user.username,
-            action: "CHANGE_ROLE",
-            targetType: "SYSTEM",
+            action: LogAction.CHANGE_ROLE as LogAction,
+            targetType: TargetType.SYSTEM as TargetType,
             targetId: userDB._id.toString(),
             targetName: userDB.username,
             message: `${user.username} change role ${userDB.username} by role ${role}`,
@@ -124,8 +125,8 @@ const setVersionClientService = async (Config: Model<IConfig>, { version, type }
         await createActivityLogService({
             userId: user._id.toString(),
             username: user.username,
-            action: "SET_VERSION",
-            targetType: "SYSTEM",
+            action: LogAction.SET_VERSION as LogAction,
+            targetType: TargetType.SYSTEM as TargetType,
             targetId: config._id.toString(),
             targetName: version + ` (${config._id.toString()})`,
             message: `${user.username} set version ${version}`,
